@@ -1,0 +1,56 @@
+class Test {
+    Test2 memberA;
+
+    Test()
+    {
+        int x = 2;
+        int y;
+    }
+    
+    Test(Test2 param, int a)
+    {
+        int x = 2;
+        int y;
+    }
+
+    void method1(int param, int a) {
+        int z = 3;
+        float x = 444;
+        if(true)
+        {
+            int m = 0;
+            m = 777;
+        }
+        return;
+    }
+
+    int method2(int param, int a, float b) {
+        if(true)
+        {
+            return 404;
+        }
+        
+        return 200;
+    }
+};
+
+float globalVar = 18;
+
+int function(int x) {
+    if(false)
+    {
+        return 333;
+    }
+    
+    return 999;
+}
+// //var k = 1 / 2
+// var counter = 120
+// function(x, y) { sin(x) * sin(y) + x * y; }
+// var g = function(x, y) { 2 * (x + der(f, y)); } // der(f, y) is 
+// matrix
+// var r{3}; // Vector of three elements
+// var J{12, 12}; // Matrix of 12x12 elements
+// var dot = function(u{:}, v{:}) -> scalar {
+//           return u[i] * v[i]; // Einstein notation
+// }

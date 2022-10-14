@@ -1,0 +1,56 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "compiler build debug",
+			"command": "python3",
+			"args": [
+                "-B",
+				"./scripts/build.py",
+				"-x",
+				"-i",
+				"-l"
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "shell",
+			"label": "compiler build release",
+			"command": "python3",
+			"args": [
+                "-B",
+				"./scripts/build.py",
+				"-x",
+				"-i",
+				"-l",
+				"-r"
+			],
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "compiler clean",
+			"command": "./scripts/clean.sh",
+			"group": "build"
+		}
+	]
+	//,
+	// "inputs": [
+	// 	{
+	// 		"id": "target",
+	// 		"description": "Build Target",
+	// 		"default": "",
+	// 		"type": "promptString"
+	// 	},
+	// ]
+}
