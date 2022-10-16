@@ -126,6 +126,30 @@ DECL_NODE(StatementExpressionPrimary)
     DECL_TOKEN(mTokenExpression);
 END_NODE()
 
+/*
+    Expression
+        ExpressionUnary
+        ExpressionBinary
+        ExpressionPrimary
+        (Expression)
+
+    ExpressionPrimary
+        Constant
+        VariableInvocation
+
+    ExpressionUnary
+        UnaryOp Expression // + - & * ~ !
+        Expression UnaryOp
+
+    ExpressionBinary
+        Expression MulOp Expression // * / %
+        Expression AddOp Expression // + -
+        Expression RelOp Expression // < > >= <=
+        Expression EqOp Expression // == !=
+        Expression BitOp Expression // & | ^
+        Expression LogicOp Expression // && ||
+*/
+
 // ******* TYPE *******
 DECL_NODE(StatementType)
     DECL_CODEGEN()

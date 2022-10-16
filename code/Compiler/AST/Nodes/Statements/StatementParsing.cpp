@@ -415,6 +415,13 @@ IMPL_PARSE(StatementExpression)
     {
         return true;
     }
+    else
+    {
+        if(expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
+        {
+            return true;
+        }
+    }
 
     return false;
 }
@@ -422,10 +429,6 @@ IMPL_PARSE(StatementExpression)
 IMPL_PARSE(StatementExpressionPrimary) 
 {
     if(expectNode<StatementVariableInvocation>())
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Identifier, &mTokenExpression))
     {
         return true;
     }
@@ -440,13 +443,6 @@ IMPL_PARSE(StatementExpressionPrimary)
     else if(expectToken(TokensDefinitions::False, &mTokenExpression))
     {
         return true;
-    }
-    else
-    {
-        if(expectRepeatNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-        {
-            return true;
-        }
     }
 
     return false;
