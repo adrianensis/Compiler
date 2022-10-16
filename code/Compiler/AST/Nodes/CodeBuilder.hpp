@@ -2,12 +2,11 @@
 #define CODEBUILDER_HPP
 
 #include "Core/Module.hpp"
+#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
 
 class Node;
 class Token;
 class TokenType;
-
-class CodeBuilder;
 
 class CodeBuilder
 {
@@ -22,11 +21,8 @@ public:
     void indent();
     void unindent();
 
-    void addNamespace();
-    void pushNamespace(const std::string& string);
-    void popNamespace();
-    bool hasNamespace() const;
-
+    void addScope();
+    
     void includeInHeader(const std::string& string);
     void includeInSource(const std::string& string);
 
@@ -42,13 +38,12 @@ private:
     std::string mFileName;
     u32 mIndent = 0;
     bool mIsNewLine = true;
-    std::string mNamespace;
-    std::vector<std::string> mNamespaceVector;
+    ScopeBuilder mScopeBuilder;
     std::vector<std::string> mHeaderIncludes;
     std::vector<std::string> mSourceIncludes;
 
 public:
-    CRGET(Namespace)
+    RGET(ScopeBuilder)
     SET(FileName)
 };
 

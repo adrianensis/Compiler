@@ -3,6 +3,7 @@
 
 #include "Core/Module.hpp"
 #include "Compiler/Lexer/Lexer.hpp"
+#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
 
 class Registry;
 
@@ -44,8 +45,12 @@ private:
     Lexer mLexer;
     std::string mInputString;
     Registry* mRegistry = nullptr;
+    ScopeBuilder mScopeBuilder;
     std::vector<Token> mTokens;
     u32 mTokenIndex = 0;
+
+public:
+    RGET(ScopeBuilder)
 };
 
 #endif

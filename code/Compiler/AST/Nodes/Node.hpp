@@ -17,6 +17,7 @@
 class Parser;
 class CodeBuilder;
 class Registry;
+class ScopeBuilder;
 
 class Node 
 {
@@ -28,6 +29,7 @@ public:
     virtual void generateCode(CodeBuilder& builder) const;
     void generateCodeChildren(CodeBuilder& builder) const;
     Registry& getRegistry() const;
+    ScopeBuilder& getScopeBuilder() const;
 
 protected:
     template <class NodeType>

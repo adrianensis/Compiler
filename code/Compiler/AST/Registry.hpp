@@ -8,7 +8,10 @@ class BaseInfo
 {
 public:
     Token mIdentifier;
+    std::string mScope;
     std::string mPath;
+
+    std::string getFullName() const { return mScope + mIdentifier.getLexeme(); }
 };
 
 class ClassInfo : public BaseInfo
@@ -41,17 +44,17 @@ public:
     Registry() = default;
     void init();
     void registerClass(const ClassInfo& info);
-    bool isClass(const std::string& name);
-    const ClassInfo& getClass(const std::string& name);
+    bool isClass(const std::string& scope, const std::string& name);
+    const ClassInfo& getClass(const std::string& scope, const std::string& name);
     void registerVariable(const VariableInfo& info);
-    bool isVariable(const std::string& name);
-    const VariableInfo& getVariable(const std::string& name);
+    bool isVariable(const std::string& scope, const std::string& name);
+    const VariableInfo& getVariable(const std::string& scope, const std::string& name);
     void registerEnum(const EnumInfo& info);
-    bool isEnum(const std::string& name);
-    const EnumInfo& getEnum(const std::string& name);
+    bool isEnum(const std::string& scope, const std::string& name);
+    const EnumInfo& getEnum(const std::string& scope, const std::string& name);
     void registerFunction(const FunctionInfo& info);
-    bool isFunction(const std::string& name);
-    const FunctionInfo& getFunction(const std::string& name);
+    bool isFunction(const std::string& scope, const std::string& name);
+    const FunctionInfo& getFunction(const std::string& scope, const std::string& name);
 };
 
 #endif

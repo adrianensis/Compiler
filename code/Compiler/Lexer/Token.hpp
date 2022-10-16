@@ -60,6 +60,7 @@ public:
     DECLARE_TOKEN(Identifier, std::string());
     DECLARE_TOKEN(True, "true");
     DECLARE_TOKEN(False, "false");
+    DECLARE_TOKEN(Arrow, "->");
 
     // symbols
     DECLARE_TOKEN_SIMPLE(LeftParen, '(');
@@ -115,6 +116,7 @@ public:
     DECLARE_TOKEN_KEYWORD(Public, "public");
     DECLARE_TOKEN_KEYWORD(Protected, "protected");
     DECLARE_TOKEN_KEYWORD(Private, "private");
+    DECLARE_TOKEN_KEYWORD(This, "this");
 
     // special
     DECLARE_TOKEN(Comment, std::string());
@@ -130,10 +132,10 @@ public:
     Token() = default;
 
     Token(const TokenType& type, const char* inputStream, std::size_t len, u32 lineNumber)
-    : mTokenType{type}, mLexeme(inputStream, len), mLineNumber(lineNumber) {}
+    : mTokenType{type}, mLexeme(inputStream, len), mLineNumber(lineNumber) { mIsNull=false; }
 
     Token(const TokenType& type, const char* inputStream, const char* end, u32 lineNumber)
-    : mTokenType{type}, mLexeme(inputStream, std::distance(inputStream, end)), mLineNumber(lineNumber) {}
+    : mTokenType{type}, mLexeme(inputStream, std::distance(inputStream, end)), mLineNumber(lineNumber) { mIsNull=false; }
 
     bool is(const TokenType& type) const { return mTokenType == type; }
     bool isOneOf(const TokenType& tokenType1, const TokenType& tokenType2) const { return is(tokenType1) || is(tokenType2); }
@@ -154,8 +156,11 @@ private:
     std::string_view mLexeme{};
     u32 mLineNumber = 0;
 
+    bool mIsNull = true;
+
 public:
     GET(LineNumber)
+    GET(IsNull)
 };
 
 #endif

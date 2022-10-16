@@ -12,6 +12,7 @@
                 "${workspaceFolder}/test"
             ],
             "defines": [],
+            "forcedInclude": ["${workspaceFolder}/code/Core/Module.hpp", "${workspaceFolder}/code/Core/FakeMacros.hpp"],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
             "cppStandard": "c++17",

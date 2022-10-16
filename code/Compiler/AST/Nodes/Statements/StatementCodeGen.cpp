@@ -5,6 +5,7 @@
 IMPL_CODEGEN(Statement)
 {
     generateCodeChildren(builder);
+    builder.newLine();
 }
 
 IMPL_CODEGEN(StatementBlock)
@@ -40,7 +41,6 @@ IMPL_CODEGEN(StatementBranch)
 
 IMPL_CODEGEN(StatementClassDefinition)
 {
-    builder.pushNamespace(mTokenIdentifier.getLexeme());
     if(builder.mGenerateHeaderCode)
     {
         builder.addTokenType(TokensDefinitions::Class);
@@ -48,7 +48,9 @@ IMPL_CODEGEN(StatementClassDefinition)
         builder.addTokenType(TokensDefinitions::LeftCurly);
         builder.newLine();
         builder.indent();
+        builder.getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
         generateCodeChildren(builder);
+        builder.getScopeBuilder().popScope();
         builder.unindent();
         builder.newLine();
         builder.addTokenType(TokensDefinitions::RightCurly);
@@ -57,14 +59,24 @@ IMPL_CODEGEN(StatementClassDefinition)
     }
     else
     {
-        if(getRegistry().isClass(mTokenIdentifier.getLexeme()))
+        if(getRegistry().isClass(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()))
         {
-            builder.includeInSource(getRegistry().getClass(mTokenIdentifier.getLexeme()).mPath);
+            builder.includeInSource(getRegistry().getClass(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()).mPath);
         }
 
+        builder.getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
         generateCodeChildren(builder);
+        builder.getScopeBuilder().popScope();
     }
-    builder.popNamespace();
+}
+
+IMPL_CODEGEN(StatementClassVisibility)
+{
+    if(builder.mGenerateHeaderCode)
+    {
+        builder.addToken(mTokenVisibility);
+        builder.addTokenType(TokensDefinitions::Colon);
+    }
 }
 
 IMPL_CODEGEN(StatementMemberVariableDefinition)
@@ -106,12 +118,15 @@ IMPL_CODEGEN(StatementGlobalVariableDefinition)
 
 IMPL_CODEGEN(StatementFunctionBaseDefinition)
 {
+
     if(!builder.mGenerateHeaderCode)
     {
-        builder.addNamespace();
+        builder.addScope();
     }
 
     builder.addToken(mTokenIdentifier);
+    
+    builder.getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
     builder.addTokenType(TokensDefinitions::LeftParen);
     mStatementParametersList->generateCode(builder);
     builder.addTokenType(TokensDefinitions::RightParen);
@@ -124,6 +139,8 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
     {
         mStatementBody->generateCode(builder);
     }
+
+    builder.getScopeBuilder().popScope();
 
     builder.newLine();
 }
@@ -155,7 +172,7 @@ IMPL_CODEGEN(StatementParametersList)
 
 IMPL_CODEGEN(StatementAssignment)
 {
-    builder.addToken(mTokenIdentifier);
+    mStatementVariableInvocation->generateCode(builder);
     if(mStatementExpression)
     {
         builder.addTokenType(TokensDefinitions::Equal);
@@ -165,17 +182,63 @@ IMPL_CODEGEN(StatementAssignment)
     builder.addTokenType(TokensDefinitions::Semicolon);
 }
 
+IMPL_CODEGEN(StatementVariableInvocation)
+{
+    builder.addToken(mTokenIdentifier);
+    if(mStatementVariableInvocation)
+    {
+        bool isPointer = false; 
+        if(getRegistry().isVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()))
+        {
+            if(getRegistry().getVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()).mType.is(TokensDefinitions::Identifier))
+            {
+                isPointer = true;
+            }
+        }
+        else
+        {
+            if(mTokenIdentifier.is(TokensDefinitions::This))
+            {
+                isPointer = true;
+            }
+        }
+        
+        if(isPointer)
+        {
+            builder.addTokenType(TokensDefinitions::Arrow);
+        }
+        else
+        {
+            builder.addTokenType(TokensDefinitions::Dot);
+        }
+
+        mStatementVariableInvocation->generateCode(builder);
+    }
+}
+
 IMPL_CODEGEN(StatementExpressionPrimary)
 {
-    builder.addToken(mTokenExpression);
+    if(mTokenExpression.getIsNull())
+    {
+        generateCodeChildren(builder);
+    }
+    else
+    {
+        builder.addToken(mTokenExpression);
+    }
 }
 
 IMPL_CODEGEN(StatementType)
 {
     builder.addToken(mTokenType);
     
-    if(getRegistry().isClass(mTokenType.getLexeme()))
+    if(mTokenType.is(TokensDefinitions::Identifier))
     {
-        builder.includeInHeader(getRegistry().getClass(mTokenType.getLexeme()).mPath);
+        builder.addTokenType(TokensDefinitions::Asterisk);
+    }
+    
+    if(getRegistry().isClass("", mTokenType.getLexeme()))
+    {
+        builder.includeInHeader(getRegistry().getClass("", mTokenType.getLexeme()).mPath);
     }
 }

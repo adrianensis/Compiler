@@ -48,6 +48,8 @@ const Token* Parser::advance()
     //     return nullptr;
     // }
 
+    //std::cout << "Parser advance: " << mTokens.at(mTokenIndex+1).toString() << std::endl;
+
     mTokenIndex++;
     return &mTokens.at(mTokenIndex);
 }

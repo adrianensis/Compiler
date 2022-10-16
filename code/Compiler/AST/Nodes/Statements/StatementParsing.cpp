@@ -120,15 +120,19 @@ IMPL_PARSE(StatementClassDefinition)
     {
         if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
         {
+            getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
             if(expectRepeatNodeEnclosed<StatementClassDefinitionItem>(TokensDefinitions::LeftCurly, TokensDefinitions::RightCurly))
             {
                 if(expectTokenOrError(TokensDefinitions::Semicolon))
                 {
-                    if(!getRegistry().isClass(mTokenIdentifier.getLexeme()))
+                    getScopeBuilder().popScope();
+
+                    if(!getRegistry().isClass(getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()))
                     {
                         ClassInfo info;
                         info.mIdentifier = mTokenIdentifier;
                         info.mPath = mParser->mPath;
+                        info.mScope = getScopeBuilder().getScope();
                         getRegistry().registerClass(info);
                         return true;
                     }
@@ -146,7 +150,11 @@ IMPL_PARSE(StatementClassDefinition)
 
 IMPL_PARSE(StatementClassDefinitionItem) 
 {
-    if(expectNode<StatementMemberVariableDefinition>())
+    if(expectNode<StatementClassVisibility>())
+    {
+        return true;
+    }
+    else if(expectNode<StatementMemberVariableDefinition>())
     {
         return true;
     }
@@ -157,6 +165,33 @@ IMPL_PARSE(StatementClassDefinitionItem)
     else if(expectNode<StatementMemberFunctionDefinition>())
     {
         return true;
+    }
+
+    return false;
+}
+
+IMPL_PARSE(StatementClassVisibility) 
+{
+    bool visibilityFound = false;
+    if(expectToken(TokensDefinitions::Public, &mTokenVisibility))
+    {
+        visibilityFound = true;
+    }
+    else if(expectToken(TokensDefinitions::Protected, &mTokenVisibility))
+    {
+        visibilityFound = true;
+    }
+    else if(expectToken(TokensDefinitions::Private, &mTokenVisibility))
+    {
+        visibilityFound = true;
+    }
+    
+    if(visibilityFound)
+    {
+        if(expectToken(TokensDefinitions::Colon))
+        {
+            return true;
+        }
     }
 
     return false;
@@ -273,10 +308,12 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
 {
     if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
     {
+        getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
         if(mStatementParametersList = expectNodeEnclosed<StatementParametersList>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
         {
             if(mStatementBody = expectNode<StatementBlock>())
             {
+                getScopeBuilder().popScope();
                 return true;
             }
         }
@@ -291,6 +328,18 @@ IMPL_PARSE(StatementParameterDefinition)
     {
         if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
         {
+            if(!getRegistry().isVariable(mTokenIdentifier.getLexeme(), getScopeBuilder().getScope()))
+            {
+                VariableInfo info;
+                info.mIdentifier = mTokenIdentifier;
+                info.mType = mStatementType->mTokenType;
+                info.mScope = getScopeBuilder().getScope();
+                getRegistry().registerVariable(info);
+            }
+            else
+            {
+                logError("Duplicated " + mTokenIdentifier.getLexeme());
+            }
             return true;
         }
     }
@@ -325,7 +374,7 @@ IMPL_PARSE(StatementParametersList)
 
 IMPL_PARSE(StatementAssignment) 
 {
-    if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
+    if(mStatementVariableInvocation = expectNode<StatementVariableInvocation>())
     {
         if(expectToken(TokensDefinitions::Equal))
         {
@@ -337,6 +386,24 @@ IMPL_PARSE(StatementAssignment)
                 }
             }
         }
+    }
+
+    return false;
+}
+
+IMPL_PARSE(StatementVariableInvocation) 
+{
+    if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier) || expectToken(TokensDefinitions::This, &mTokenIdentifier))
+    {
+        if(expectToken(TokensDefinitions::Dot))
+        {
+            if(mStatementVariableInvocation = expectNode<StatementVariableInvocation>())
+            {
+                return true;
+            }
+        }
+
+        return true;
     }
 
     return false;
@@ -354,7 +421,11 @@ IMPL_PARSE(StatementExpression)
 
 IMPL_PARSE(StatementExpressionPrimary) 
 {
-    if(expectToken(TokensDefinitions::Identifier, &mTokenExpression))
+    if(expectNode<StatementVariableInvocation>())
+    {
+        return true;
+    }
+    else if(expectToken(TokensDefinitions::Identifier, &mTokenExpression))
     {
         return true;
     }

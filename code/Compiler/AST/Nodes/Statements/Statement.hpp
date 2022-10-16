@@ -44,6 +44,11 @@ END_NODE()
 DECL_NODE(StatementClassDefinitionItem)
 END_NODE()
 
+DECL_NODE(StatementClassVisibility)
+    DECL_CODEGEN()
+    DECL_TOKEN(mTokenVisibility)
+END_NODE()
+
 DECL_NODE(StatementConstructorDefinition)
 END_NODE()
 
@@ -98,11 +103,18 @@ DECL_NODE(StatementParametersList)
     DECL_CODEGEN()
 END_NODE()
 
+// ******* INVOCATION *******
+DECL_NODE(StatementVariableInvocation)
+    DECL_CODEGEN()
+    DECL_TOKEN(mTokenIdentifier);
+    DECL_CHILD(StatementVariableInvocation, mStatementVariableInvocation);
+END_NODE()
+
 // ******* ASSIGNMENT *******
 DECL_NODE(StatementAssignment)
     DECL_CODEGEN()
     DECL_CHILD(StatementExpression, mStatementExpression);
-    DECL_TOKEN(mTokenIdentifier);
+    DECL_CHILD(StatementVariableInvocation, mStatementVariableInvocation);
 END_NODE()
 
 // ******* EXPRESSION *******

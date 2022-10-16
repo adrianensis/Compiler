@@ -56,38 +56,13 @@ void CodeBuilder::unindent()
     }
 }
 
-void CodeBuilder::addNamespace()
+void CodeBuilder::addScope()
 {
-    if(hasNamespace())
+    if(mScopeBuilder.hasScope())
     {
-        addString(getNamespace());
+        addString(mScopeBuilder.getScope());
         addString("::");
     }
-}
-
-void CodeBuilder::pushNamespace(const std::string& string)
-{
-    mNamespaceVector.push_back(string);
-
-    mNamespace.clear();
-    for (const std::string &nameSpace: mNamespaceVector)
-    {
-        if(!mNamespace.empty())
-        {
-            mNamespace += "::";
-        }
-        mNamespace += nameSpace;
-    }
-}
-
-void CodeBuilder::popNamespace()
-{
-    mNamespaceVector.pop_back();
-}
-
-bool CodeBuilder::hasNamespace() const
-{
-    return !mNamespaceVector.empty();
 }
 
 void CodeBuilder::includeInHeader(const std::string& string)
@@ -106,8 +81,12 @@ const std::string& CodeBuilder::generateCode()
 
     if(mGenerateHeaderCode)
     {
-        finalCode += "#ifndef " + mFileName + "_HPP\n";
-        finalCode += "#define " + mFileName + "_HPP\n";
+        std::string ifGuardName = mFileName;
+
+        std::replace(ifGuardName.begin(), ifGuardName.end(), '.', '_');
+
+        finalCode += "#ifndef " + ifGuardName + "_HPP\n";
+        finalCode += "#define " + ifGuardName + "_HPP\n";
 
         FOR_LIST(it, mHeaderIncludes)
         {

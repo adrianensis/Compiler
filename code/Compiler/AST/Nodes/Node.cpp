@@ -1,6 +1,7 @@
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Parser/Parser.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
+#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
 
 Node::~Node() 
 {
@@ -33,6 +34,11 @@ void Node::generateCodeChildren(CodeBuilder& builder) const
 Registry& Node::getRegistry() const
 {
     return mParser->getRegistry();
+}
+
+ScopeBuilder& Node::getScopeBuilder() const
+{
+    return mParser->getScopeBuilder();
 }
 
 Node* Node::internalExpectNode(Node* node)
@@ -75,7 +81,7 @@ bool Node::expectToken(const TokenType& type, Token* capture /*= nullptr*/)
 
 bool Node::expectTokenOrError(const TokenType& type, Token* capture /*= nullptr*/) 
 {
-    bool result = expectToken(TokensDefinitions::Semicolon);
+    bool result = expectToken(type);
 
     if(!result)
     {
