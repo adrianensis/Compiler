@@ -71,13 +71,47 @@ protected:
         {
             expectRepeatNode<NodeType>();
 
-            if(expectToken(rightToken))
+            if(expectTokenOrError(rightToken))
             {
                 return true;
             }
-            else
+        }
+
+        return false;
+    }
+
+    template <class NodeType>
+    bool expectNodeListEnclosed(const TokenType& separatorToken, const TokenType& leftToken, const TokenType& rightToken)
+    {
+        if(expectToken(leftToken))
+        {
+            bool endDetected = false;
+            bool wrongEnd = false;
+            do
             {
-                logError("Expected: " + rightToken.getValue());
+                if(expectNode<NodeType>())
+                {
+                    // ok
+                }
+
+                if(!expectToken(separatorToken))
+                {
+                    if(expectTokenOrError(rightToken))
+                    {
+                        endDetected = true;
+                    }
+                    else
+                    {
+                        wrongEnd = true;
+                        break;
+                    }
+                }
+                
+            } while(!endDetected);
+
+            if(!wrongEnd)
+            {
+                return true;
             }
         }
 

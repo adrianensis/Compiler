@@ -4,18 +4,6 @@
 #include "Core/Module.hpp"
 #include "Compiler/Lexer/Token.hpp"
 
-class LexerUtils 
-{
-public:
-    static bool isSpace(char c);
-    static bool isNewLine(char c);
-    static bool isDigit(char c);
-    static bool isAlpha(char c);
-    static bool isIdentifierStartingChar(char c);
-    static bool isIdentifierChar(char c);
-    static bool isComment(char c, char nextChar);
-};
-
 class Lexer 
 {
 public:

@@ -1,52 +1,5 @@
 #include "Compiler/Lexer/Lexer.hpp"
-
-bool LexerUtils::isNewLine(char c)
-{
-    return c == '\n';
-}
-
-bool LexerUtils::isSpace(char c)
-{
-    if(isNewLine(c))
-    {
-        return true;
-    }
-
-    switch (c)
-    {
-        case ' ':
-        case '\t':
-        // case '\r':
-            return true;
-        default:
-            return false;
-    }
-}
-
-bool LexerUtils::isDigit(char c)
-{
-    return '0' <= c && c <= '9';
-}
-
-bool LexerUtils::isAlpha(char c)
-{
-    return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
-}
-
-bool LexerUtils::isIdentifierStartingChar(char c)
-{
-    return (c == '_' || isAlpha(c));
-}
-
-bool LexerUtils::isIdentifierChar(char c)
-{
-    return (LexerUtils::isIdentifierStartingChar(c) || LexerUtils::isDigit(c));
-}
-
-bool LexerUtils::isComment(char c, char nextChar)
-{
-    return c == '/' && (nextChar == '/');
-}
+#include "Compiler/Utils/CharUtils.hpp"
 
 Token Lexer::next()
 {
@@ -55,15 +8,15 @@ Token Lexer::next()
     char currentChar = getCurrentChar();
     char nextChar = getNextChar();
 
-    if(LexerUtils::isIdentifierStartingChar(currentChar))
+    if(CharUtils::isIdentifierStartingChar(currentChar))
     {
         return processIdentifier();
     }
-    else if(LexerUtils::isDigit(currentChar))
+    else if(CharUtils::isDigit(currentChar))
     {
         return processNumber();
     }
-    else if(LexerUtils::isComment(currentChar, nextChar))
+    else if(CharUtils::isComment(currentChar, nextChar))
     {
         return processComment();
     }
@@ -87,14 +40,34 @@ Token Lexer::next()
         case '}':
             return processSimpleToken(TokensDefinitions::RightCurly);
         case '<':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::LessThanEqual);
+            }
             return processSimpleToken(TokensDefinitions::LessThan);
         case '>':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::GreaterThanEqual);
+            }
             return processSimpleToken(TokensDefinitions::GreaterThan);
         case '=':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::EqualTo);
+            }
             return processSimpleToken(TokensDefinitions::Equal);
         case '+':
+            if(TokensDefinitions::Plus.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::Increment);
+            }
             return processSimpleToken(TokensDefinitions::Plus);
         case '-':
+            if(TokensDefinitions::Minus.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::Decrement);
+            }
             return processSimpleToken(TokensDefinitions::Minus);
         case '*':
             return processSimpleToken(TokensDefinitions::Asterisk);
@@ -153,7 +126,7 @@ Token Lexer::processComment()
     while (getCurrentChar() != '\0')
     {
         char nextChar = advance();
-        if (LexerUtils::isNewLine(nextChar) || /*nextChar == '\r' ||*/ nextChar == '\0')
+        if (CharUtils::isNewLine(nextChar) || /*nextChar == '\r' ||*/ nextChar == '\0')
         {
             return Token(TokensDefinitions::Comment, start, std::distance(start, mInputStream) - 1, mLineNumber);
         }
@@ -163,14 +136,19 @@ Token Lexer::processComment()
 
 Token Lexer::processSimpleToken(const TokenType& tokenType)
 {
-    Token simple(tokenType, mInputStream, 1, mLineNumber);
-    advance();
+    u32 tokenCharsSize = tokenType.getValue().size();
+    Token simple(tokenType, mInputStream, tokenCharsSize, mLineNumber);
+    FOR_RANGE(i, 0, tokenCharsSize)
+    {
+        advance();
+    }
+    
     return simple;
 }
 
 void Lexer::skipSpaces()
 {
-    while (LexerUtils::isSpace(getCurrentChar()))
+    while (CharUtils::isSpace(getCurrentChar()))
     {
         advance();
     }
@@ -178,7 +156,7 @@ void Lexer::skipSpaces()
 
 void Lexer::skipDigits()
 {
-    while (LexerUtils::isDigit(getCurrentChar()))
+    while (CharUtils::isDigit(getCurrentChar()))
     {
         advance();
     }
@@ -186,7 +164,7 @@ void Lexer::skipDigits()
 
 void Lexer::skipIdentifierChars()
 {
-    while (LexerUtils::isIdentifierChar(getCurrentChar()))
+    while (CharUtils::isIdentifierChar(getCurrentChar()))
     {
         advance();
     }
@@ -195,7 +173,7 @@ void Lexer::skipIdentifierChars()
 char Lexer::advance()
 {
     char currentChar = getCurrentChar();
-    if(LexerUtils::isNewLine(currentChar))
+    if(CharUtils::isNewLine(currentChar))
     {
         mLineNumber++;
         mLines.push_back(mCurrentLine);

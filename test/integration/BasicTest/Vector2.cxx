@@ -35,12 +35,12 @@ public:
     //     this->y = other.y;
     // }
 
-    // Vector2& set(f32 x, f32 y)
-    // {
-    //     this->x = x;
-    //     this->y = y;
-    //     return *this;
-    // }
+    Vector2 set(float x, float y)
+    {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
 
     // Vector2& set(const Vector2& rhs)
     // {
@@ -67,62 +67,62 @@ public:
         return this;
     }
 
-    // Vector2& sub(const Vector2& rhs)
-    // {
-    //     x = x - rhs.x;
-    //     y = y - rhs.y;
-    //     return *this;
-    // }
+    Vector2 sub(Vector2 rhs)
+    {
+        x = x - rhs.x;
+        y = y - rhs.y;
+        return this;
+    }
 
-    // Vector2& mul(const Vector2& rhs)
-    // {
-    //     x = x * rhs.x;
-    //     y = y * rhs.y;
-    //     return *this;
-    // }
+    Vector2 mul(Vector2 rhs)
+    {
+        x = x * rhs.x;
+        y = y * rhs.y;
+        return this;
+    }
 
-    // Vector2& div(const Vector2& rhs)
-    // {
-    //     ASSERT_MSG(rhs.x != 0, "Division by zero.");
-    //     ASSERT_MSG(rhs.y != 0, "Division by zero.");
-    //     x = x / rhs.x;
-    //     y = y / rhs.y;
-    //     return *this;
-    // }
+    Vector2 div(Vector2 rhs)
+    {
+        // ASSERT_MSG(rhs.x != 0, "Division by zero.");
+        // ASSERT_MSG(rhs.y != 0, "Division by zero.");
+        x = x / rhs.x;
+        y = y / rhs.y;
+        return this;
+    }
 
-    // Vector2& add(f32 rhs)
-    // {
-    //     x = x + rhs;
-    //     y = y + rhs;
-    //     return *this;
-    // }
+    Vector2 add(float rhs)
+    {
+        x = x + rhs;
+        y = y + rhs;
+        return this;
+    }
 
-    // Vector2& sub(f32 rhs)
-    // {
-    //     x = x - rhs;
-    //     y = y - rhs;
-    //     return *this;
-    // }
+    Vector2 sub(float rhs)
+    {
+        x = x - rhs;
+        y = y - rhs;
+        return this;
+    }
 
-    // Vector2& mul(f32 rhs)
-    // {
-    //     x = x * rhs;
-    //     y = y * rhs;
-    //     return *this;
-    // }
+    Vector2 mul(float rhs)
+    {
+        x = x * rhs;
+        y = y * rhs;
+        return this;
+    }
 
-    // Vector2& div(f32 rhs)
-    // {
-    //     ASSERT_MSG(rhs != 0, "Division by zero.");
-    //     x = x / rhs;
-    //     y = y / rhs;
-    //     return *this;
-    // }
+    Vector2 div(float rhs)
+    {
+        //ASSERT_MSG(rhs != 0, "Division by zero.");
+        x = x / rhs;
+        y = y / rhs;
+        return this;
+    }
 
-    // f32 dot(const Vector2& v) const
-    // {
-    //     return this->x * v.x + this->y * v.y;
-    // }
+    float dot(Vector2 v) const
+    {
+        return this.x * v.x + this.y * v.y;
+    }
 
     // f32 sqrlen() const
     // {

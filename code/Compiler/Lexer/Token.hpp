@@ -37,6 +37,16 @@ public:
         return mValue;
     }
 
+    bool matchString(const std::string& str) const
+    {
+        return mValue == str;
+    }
+    
+    bool matchString(const char c) const
+    {
+        return mValue == std::string(1, c);
+    }
+
     static bool isKeyword(const std::string& keyword);
     static const TokenType& getKeywordTokenType(const std::string& keyword);
 
@@ -58,9 +68,9 @@ public:
     // literals
     DECLARE_TOKEN(Number, std::string());
     DECLARE_TOKEN(Identifier, std::string());
-    DECLARE_TOKEN(True, "true");
-    DECLARE_TOKEN(False, "false");
-    DECLARE_TOKEN(Arrow, "->");
+    DECLARE_TOKEN_KEYWORD(True, "true");
+    DECLARE_TOKEN_KEYWORD(False, "false");
+
 
     // symbols
     DECLARE_TOKEN_SIMPLE(LeftParen, '(');
@@ -75,7 +85,12 @@ public:
     DECLARE_TOKEN_SIMPLE(Plus, '+');
     DECLARE_TOKEN_SIMPLE(Minus, '-');
     DECLARE_TOKEN_SIMPLE(Asterisk, '*');
+    DECLARE_TOKEN_SIMPLE(Ampersand, '&');
+    DECLARE_TOKEN_SIMPLE(Exclamation, '!');
+    DECLARE_TOKEN_SIMPLE(Tilde, '~');
+    DECLARE_TOKEN_SIMPLE(Caret, '^');
     DECLARE_TOKEN_SIMPLE(Slash, '/');
+    DECLARE_TOKEN_SIMPLE(Percent, '%');
     DECLARE_TOKEN_SIMPLE(Hash, '#');
     DECLARE_TOKEN_SIMPLE(Dot, '.');
     DECLARE_TOKEN_SIMPLE(Comma, ',');
@@ -84,6 +99,17 @@ public:
     DECLARE_TOKEN_SIMPLE(SingleQuote, '\'');
     DECLARE_TOKEN_SIMPLE(DoubleQuote, '"');
     DECLARE_TOKEN_SIMPLE(Pipe, '|');
+    
+    DECLARE_TOKEN(Arrow, "->");
+    DECLARE_TOKEN(Increment, "++");
+    DECLARE_TOKEN(Decrement, "--");
+    DECLARE_TOKEN(EqualTo, "==");
+    DECLARE_TOKEN(NotEqualTo, "!=");
+    DECLARE_TOKEN(LessThanEqual, "<=");
+    DECLARE_TOKEN(GreaterThanEqual, ">=");
+    DECLARE_TOKEN(And, "&&");
+    DECLARE_TOKEN(Or, "||");
+
 
     // keywords
     DECLARE_TOKEN_KEYWORD(Return, "return");
@@ -111,8 +137,6 @@ public:
     DECLARE_TOKEN_KEYWORD(Void, "void");
     DECLARE_TOKEN_KEYWORD(While, "while");
     DECLARE_TOKEN_KEYWORD(Class, "class");
-    DECLARE_TOKEN_KEYWORD(Get, "get");
-    DECLARE_TOKEN_KEYWORD(Set, "set");
     DECLARE_TOKEN_KEYWORD(Public, "public");
     DECLARE_TOKEN_KEYWORD(Protected, "protected");
     DECLARE_TOKEN_KEYWORD(Private, "private");

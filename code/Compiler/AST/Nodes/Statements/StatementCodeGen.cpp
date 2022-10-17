@@ -118,7 +118,6 @@ IMPL_CODEGEN(StatementGlobalVariableDefinition)
 
 IMPL_CODEGEN(StatementFunctionBaseDefinition)
 {
-
     if(!builder.mGenerateHeaderCode)
     {
         builder.addScope();
@@ -131,12 +130,18 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
     mStatementParametersList->generateCode(builder);
     builder.addTokenType(TokensDefinitions::RightParen);
 
+    if(mStatementFunctionQualifier)
+    {
+        mStatementFunctionQualifier->generateCode(builder);
+    }
+
     if(builder.mGenerateHeaderCode)
     {
         builder.addTokenType(TokensDefinitions::Semicolon);
     }
     else
     {
+        builder.newLine();
         mStatementBody->generateCode(builder);
     }
 
@@ -149,6 +154,11 @@ IMPL_CODEGEN(StatementFunctionDefinition)
 {
     mStatementType->generateCode(builder);
     mStatementFunctionBaseDefinition->generateCode(builder);
+}
+
+IMPL_CODEGEN(StatementFunctionQualifier)
+{
+    builder.addToken(mTokenQualifier);
 }
 
 IMPL_CODEGEN(StatementParameterDefinition)
@@ -172,7 +182,7 @@ IMPL_CODEGEN(StatementParametersList)
 
 IMPL_CODEGEN(StatementAssignment)
 {
-    mStatementVariableInvocation->generateCode(builder);
+    mStatementExpressionInvocation->generateCode(builder);
     if(mStatementExpression)
     {
         builder.addTokenType(TokensDefinitions::Equal);
@@ -182,37 +192,82 @@ IMPL_CODEGEN(StatementAssignment)
     builder.addTokenType(TokensDefinitions::Semicolon);
 }
 
-IMPL_CODEGEN(StatementVariableInvocation)
+IMPL_CODEGEN(StatementExpressionInvocation)
 {
-    builder.addToken(mTokenIdentifier);
-    if(mStatementVariableInvocation)
+    if(!mTokenThis.getIsNull())
     {
-        bool isPointer = false; 
-        if(getRegistry().isVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()))
-        {
-            if(getRegistry().getVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()).mType.is(TokensDefinitions::Identifier))
-            {
-                isPointer = true;
-            }
-        }
-        else
-        {
-            if(mTokenIdentifier.is(TokensDefinitions::This))
-            {
-                isPointer = true;
-            }
-        }
-        
-        if(isPointer)
+        builder.addTokenType(TokensDefinitions::This);
+        if(getChildren().size() > 0)
         {
             builder.addTokenType(TokensDefinitions::Arrow);
         }
-        else
-        {
-            builder.addTokenType(TokensDefinitions::Dot);
-        }
+    }
 
-        mStatementVariableInvocation->generateCode(builder);
+    generateCodeChildren(builder);
+}
+
+IMPL_CODEGEN(StatementExpressionCompoundInvocation)
+{
+    mStatementExpressionSimpleInvocation->generateCode(builder);
+    if(mStatementExpressionCompoundInvocation)
+    {
+        builder.addTokenType(TokensDefinitions::Dot);
+        mStatementExpressionCompoundInvocation->generateCode(builder);
+    }
+}
+
+IMPL_CODEGEN(StatementExpressionVariableInvocation)
+{
+    builder.addToken(mTokenIdentifier);
+    // if(mStatementExpressionVariableInvocation)
+    // {
+    //     bool isPointer = false; 
+    //     if(getRegistry().isVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()))
+    //     {
+    //         if(getRegistry().getVariable(builder.getScopeBuilder().getScope(), mTokenIdentifier.getLexeme()).mType.is(TokensDefinitions::Identifier))
+    //         {
+    //             isPointer = true;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         if(mTokenIdentifier.is(TokensDefinitions::This))
+    //         {
+    //             isPointer = true;
+    //         }
+    //     }
+        
+    //     if(isPointer)
+    //     {
+    //         builder.addTokenType(TokensDefinitions::Arrow);
+    //     }
+    //     else
+    //     {
+    //         builder.addTokenType(TokensDefinitions::Dot);
+    //     }
+
+    //     mStatementExpressionVariableInvocation->generateCode(builder);
+    // }
+}
+
+IMPL_CODEGEN(StatementExpressionFunctionInvocation)
+{
+    builder.addToken(mTokenIdentifier);
+    builder.addTokenType(TokensDefinitions::LeftParen);
+    mStatementExpressionFunctionParametersList->generateCode(builder);
+    builder.addTokenType(TokensDefinitions::RightParen);
+}
+
+IMPL_CODEGEN(StatementExpressionFunctionParametersList)
+{
+    FOR_ARRAY(i, getChildren())
+    {
+        getChildren().at(i)->generateCode(builder);
+
+        if(i < (getChildren().size() - 1))
+        {
+            builder.addTokenType(TokensDefinitions::Comma);
+        }
     }
 }
 
@@ -226,6 +281,37 @@ IMPL_CODEGEN(StatementExpressionPrimary)
     {
         builder.addToken(mTokenExpression);
     }
+}
+
+IMPL_CODEGEN(StatementExpressionUnary)
+{
+    if(mStatementUnaryOperatorPre)
+    {
+        mStatementUnaryOperatorPre->generateCode(builder);
+        mStatementExpressionPrimary->generateCode(builder);
+    }
+    else
+    {
+        mStatementExpressionPrimary->generateCode(builder);
+        mStatementUnaryOperatorPost->generateCode(builder);
+    }
+}
+
+IMPL_CODEGEN(StatementExpressionBinary)
+{
+    mStatementExpressionPrimary->generateCode(builder);
+    mStatementBinaryOperator->generateCode(builder);
+    mStatementExpression->generateCode(builder);
+}
+
+IMPL_CODEGEN(StatementUnaryOperator)
+{
+    builder.addToken(mTokenOperator);
+}
+
+IMPL_CODEGEN(StatementBinaryOperator)
+{
+    builder.addToken(mTokenOperator);
 }
 
 IMPL_CODEGEN(StatementType)

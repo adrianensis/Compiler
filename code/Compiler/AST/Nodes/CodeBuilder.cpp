@@ -1,6 +1,7 @@
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
+#include "Compiler/Utils/CharUtils.hpp"
 
 void CodeBuilder::addString(const std::string& string)
 {
@@ -11,7 +12,11 @@ void CodeBuilder::addString(const std::string& string)
     }
     else
     {
-        mCode += " ";
+        // if we are joining 2 strings, add 1 space in between
+        if(CharUtils::isIdentifierChar(mCode.back()) && CharUtils::isIdentifierChar(string.front()))
+        {
+            mCode += " ";
+        }
     }
 
     mCode += string;

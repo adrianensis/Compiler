@@ -72,7 +72,7 @@ bool Node::expectToken(const TokenType& type, Token* capture /*= nullptr*/)
         {
             *capture = *token;
         }
-        //std::cout << typeid(*this).name() << ": " << token->getLexeme() << std::endl;
+        std::cout << typeid(*this).name() << ": " << token->getLexeme() << std::endl;
         mParser->advance();
     }
 

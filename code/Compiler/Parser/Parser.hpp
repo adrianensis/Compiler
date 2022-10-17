@@ -6,12 +6,6 @@
 #include "Compiler/AST/Nodes/ScopeBuilder.hpp"
 
 class Registry;
-
-class ParserUtils 
-{
-public:
-};
-
 class Node;
 
 class Parser 
