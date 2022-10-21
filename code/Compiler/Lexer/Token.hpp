@@ -7,7 +7,7 @@ class TokenType
 {
 public:
     TokenType() = default;
-    TokenType(const std::string& name, const std::string& value, bool isKeyword);
+    TokenType(const std::string& name, const std::string& value, bool isKeyword, bool isPrimitive);
 
     bool operator== (const TokenType& other) const 
     {
@@ -49,18 +49,21 @@ public:
 
     static bool isKeyword(const std::string& keyword);
     static const TokenType& getKeywordTokenType(const std::string& keyword);
+    static bool isPrimitive(const std::string& primitive);
 
 private:
     inline static u32 smTokenTypeCounter = 0;
     inline static std::map<std::string, TokenType> smKeywordsMap = {};
+    inline static std::map<std::string, TokenType> smPrimitivesMap = {};
     u32 mId = 0;
     std::string mName{};
     std::string mValue{};
 };
 
-#define DECLARE_TOKEN(tokenName, value) inline static TokenType tokenName = TokenType(#tokenName, value, false);
+#define DECLARE_TOKEN(tokenName, value) inline static TokenType tokenName = TokenType(#tokenName, value, false, false);
 #define DECLARE_TOKEN_SIMPLE(tokenName, singleChar) DECLARE_TOKEN(tokenName, std::string(1, singleChar));
-#define DECLARE_TOKEN_KEYWORD(tokenName, value) inline static TokenType tokenName = TokenType(#tokenName, value, true);
+#define DECLARE_TOKEN_KEYWORD(tokenName, value) inline static TokenType tokenName = TokenType(#tokenName, value, true, false);
+#define DECLARE_TOKEN_PRIMITIVE(tokenName, value) inline static TokenType tokenName = TokenType(#tokenName, value, true, true);
 
 class TokensDefinitions 
 {
@@ -103,15 +106,25 @@ public:
     DECLARE_TOKEN(Arrow, "->");
     DECLARE_TOKEN(Increment, "++");
     DECLARE_TOKEN(Decrement, "--");
+    DECLARE_TOKEN(PlusEqual, "+=");
+    DECLARE_TOKEN(MinusEqual, "-=");
     DECLARE_TOKEN(EqualTo, "==");
     DECLARE_TOKEN(NotEqualTo, "!=");
     DECLARE_TOKEN(LessThanEqual, "<=");
     DECLARE_TOKEN(GreaterThanEqual, ">=");
     DECLARE_TOKEN(And, "&&");
     DECLARE_TOKEN(Or, "||");
+    DECLARE_TOKEN(Scope, "::");
 
+    // primitives
+    DECLARE_TOKEN_PRIMITIVE(Int, "int");
+    DECLARE_TOKEN_PRIMITIVE(Float, "float");
+    DECLARE_TOKEN_PRIMITIVE(Void, "void");
+    DECLARE_TOKEN_PRIMITIVE(Long, "long");
+    DECLARE_TOKEN_PRIMITIVE(Short, "short");
 
     // keywords
+    DECLARE_TOKEN_KEYWORD(Using, "using");
     DECLARE_TOKEN_KEYWORD(Return, "return");
     DECLARE_TOKEN_KEYWORD(Break, "break");
     DECLARE_TOKEN_KEYWORD(Case, "case");
@@ -123,18 +136,13 @@ public:
     DECLARE_TOKEN_KEYWORD(Double, "double");
     DECLARE_TOKEN_KEYWORD(Else, "else");
     DECLARE_TOKEN_KEYWORD(Enum, "enum");
-    DECLARE_TOKEN_KEYWORD(Float, "float");
     DECLARE_TOKEN_KEYWORD(For, "for");
     DECLARE_TOKEN_KEYWORD(If, "if");
-    DECLARE_TOKEN_KEYWORD(Int, "int");
-    DECLARE_TOKEN_KEYWORD(Long, "long");
-    DECLARE_TOKEN_KEYWORD(Short, "short");
     DECLARE_TOKEN_KEYWORD(Signed, "signed");
     DECLARE_TOKEN_KEYWORD(Sizeof, "sizeof");
     DECLARE_TOKEN_KEYWORD(Static, "static");
     DECLARE_TOKEN_KEYWORD(Switch, "switch");
     DECLARE_TOKEN_KEYWORD(Unsigned, "unsigned");
-    DECLARE_TOKEN_KEYWORD(Void, "void");
     DECLARE_TOKEN_KEYWORD(While, "while");
     DECLARE_TOKEN_KEYWORD(Class, "class");
     DECLARE_TOKEN_KEYWORD(Public, "public");
@@ -173,7 +181,8 @@ public:
         return mTokenType.getName() + std::string(" : ") + getLexeme();
     }
 
-    bool isKeyword();
+    bool isKeyword() const;
+    bool isPrimitive() const;
 
 private:
     TokenType mTokenType{};

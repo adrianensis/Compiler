@@ -1,101 +1,198 @@
 #include "test/integration/BasicTest/Vector2.cxx.hpp"
 Vector2::Vector2()
 {
-    x=0;
-    y=0;
+    x=0;;
+    y=0;;
 
 }
 
-Vector2::Vector2(float x,float y)
+Vector2::Vector2(f32 x,f32 y)
 {
-    this->x=x;
-    this->y=y;
+    this->x=x;;
+    this->y=y;;
 
 }
 
-Vector2::Vector2(Vector2*other)
+Vector2::Vector2(Vector2&other)
 {
-    add(c++)
-    this->x=other.add(1).x;
-    this->y=other.y.a.b(1,2,3).c.d(aa(a.a().b,c++)).e;
+    this->x=other.x;;
+    this->y=other.y;;
 
 }
 
-Vector2*Vector2::set(float x,float y)
+Vector2&Vector2::set(f32 x,f32 y)
 {
-    this->x=x;
-    this->y=y;
-    return this;
+    this->x=x;;
+    this->y=y;;
+    return*this;;
 
 }
 
-Vector2*Vector2::add(Vector2*rhs)
+Vector2&Vector2::set(Vector2&rhs)
 {
-    x=x+rhs.x;
-    y=y+rhs.y;
-    return this;
+    this->set(rhs.x,rhs.y);
+    return*this;;
 
 }
 
-Vector2*Vector2::sub(Vector2*rhs)
+Vector2&Vector2::add(Vector2&rhs)
 {
-    x=x-rhs.x;
-    y=y-rhs.y;
-    return this;
+    x=x+rhs.x;;
+    y=y+rhs.y;;
+    return*this;;
 
 }
 
-Vector2*Vector2::mul(Vector2*rhs)
+Vector2&Vector2::sub(Vector2&rhs)
 {
-    x=x*rhs.x;
-    y=y*rhs.y;
-    return this;
+    x=x-rhs.x;;
+    y=y-rhs.y;;
+    return*this;;
 
 }
 
-Vector2*Vector2::div(Vector2*rhs)
+Vector2&Vector2::mul(Vector2&rhs)
 {
-    x=x/rhs.x;
-    y=y/rhs.y;
-    return this;
+    x=x*rhs.x;;
+    y=y*rhs.y;;
+    return*this;;
 
 }
 
-Vector2*Vector2::add(float rhs)
+Vector2&Vector2::div(Vector2&rhs)
 {
-    x=x+rhs;
-    y=y+rhs;
-    return this;
+    x=x/rhs.x;;
+    y=y/rhs.y;;
+    return*this;;
 
 }
 
-Vector2*Vector2::sub(float rhs)
+Vector2&Vector2::add(f32 rhs)
 {
-    x=x-rhs;
-    y=y-rhs;
-    return this;
+    x=x+rhs;;
+    y=y+rhs;;
+    return*this;;
 
 }
 
-Vector2*Vector2::mul(float rhs)
+Vector2&Vector2::sub(f32 rhs)
 {
-    x=x*rhs;
-    y=y*rhs;
-    return this;
+    x=x-rhs;;
+    y=y-rhs;;
+    return*this;;
 
 }
 
-Vector2*Vector2::div(float rhs)
+Vector2&Vector2::mul(f32 rhs)
 {
-    x=x/rhs;
-    y=y/rhs;
-    return this;
+    x=x*rhs;;
+    y=y*rhs;;
+    return*this;;
 
 }
 
-float Vector2::dot(Vector2*v)const
+Vector2&Vector2::div(f32 rhs)
 {
-    return this->x*v.x+this->y*v.y;
+    x=x/rhs;;
+    y=y/rhs;;
+    return*this;;
+
+}
+
+f32 Vector2::dot(Vector2&v)const
+{
+    return this->x*v.x+this->y*v.y;;
+
+}
+
+f32 Vector2::sqrlen()const
+{
+    return this->dot(*this);;
+
+}
+
+f32 Vector2::sqrdst(Vector2&v)const
+{
+    Vector2 sub=Vector2(v)-*this;
+    ;
+    return sub.dot(sub);;
+
+}
+
+f32 Vector2::len()const
+{
+    return sqrtf(this->sqrlen());;
+
+}
+
+f32 Vector2::max()const
+{
+    return std::max(x,y);;
+
+}
+
+f32 Vector2::min()const
+{
+    return std::min(x,y);;
+
+}
+
+Vector2&Vector2::nor()
+{
+    f32 len=this->len();
+    ;
+    this->div(len);
+    return*this;;
+
+}
+
+f32 Vector2::dst(Vector2&v)const
+{
+    return sqrtf(this->sqrdst(v));;
+
+}
+
+bool Vector2::eq(Vector2&v)const
+{
+    return MathUtils::eqf(this->x,v.x)&&MathUtils::eqf(this->y,v.y);;
+
+}
+
+bool Vector2::eq(Vector2&v,f32 e)const
+{
+    return MathUtils::eqf(this->x,v.x,e)&&MathUtils::eqf(this->y,v.y,e);;
+
+}
+
+Vector2&Vector2::lerp(Vector2&target,f32 t)
+{
+    (*this)+=Vector2(target).sub(*this).mul(t);
+    return*this;;
+
+}
+
+f32 Vector2::angle(Vector2&v)const
+{
+    f32 angle=atan2f(v.y,v.x)-atan2f(this->y,this->x);
+    ;
+    if(angle<0){
+        angle+=2*MathUtils::PI;
+
+    }
+    ;
+    return angle;;
+
+}
+
+Vector2&Vector2::clamp(f32 maxLength)
+{
+    if(this->sqrlen()>maxLength*maxLength){
+        this->nor();
+        this->mul(maxLength);
+
+    }
+    ;
+    return*this;;
 
 }
 

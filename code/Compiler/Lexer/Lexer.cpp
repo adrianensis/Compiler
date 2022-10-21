@@ -62,11 +62,19 @@ Token Lexer::next()
             {
                 return processSimpleToken(TokensDefinitions::Increment);
             }
+            else if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::PlusEqual);
+            }
             return processSimpleToken(TokensDefinitions::Plus);
         case '-':
             if(TokensDefinitions::Minus.matchString(nextChar))
             {
                 return processSimpleToken(TokensDefinitions::Decrement);
+            }
+            else if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::MinusEqual);
             }
             return processSimpleToken(TokensDefinitions::Minus);
         case '*':
@@ -80,6 +88,10 @@ Token Lexer::next()
         case ',':
             return processSimpleToken(TokensDefinitions::Comma);
         case ':':
+            if(TokensDefinitions::Colon.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::Scope);
+            }
             return processSimpleToken(TokensDefinitions::Colon);
         case ';':
             return processSimpleToken(TokensDefinitions::Semicolon);
@@ -88,6 +100,16 @@ Token Lexer::next()
         case '"':
             return processSimpleToken(TokensDefinitions::DoubleQuote);
         case '|':
+            if(TokensDefinitions::Pipe.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::Or);
+            }
+            return processSimpleToken(TokensDefinitions::Pipe);
+        case '&':
+            if(TokensDefinitions::Ampersand.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::And);
+            }
             return processSimpleToken(TokensDefinitions::Pipe);
         }
     }

@@ -8,10 +8,15 @@ class BaseInfo
 {
 public:
     Token mIdentifier;
+    Token mType;
     std::string mScope;
     std::string mPath;
 
-    std::string getFullName() const { return mScope + mIdentifier.getLexeme(); }
+    virtual std::string getFullName() const { return mScope + mIdentifier.getLexeme(); }
+};
+
+class TypeInfo : public BaseInfo
+{
 };
 
 class ClassInfo : public BaseInfo
@@ -21,7 +26,7 @@ class ClassInfo : public BaseInfo
 class VariableInfo : public BaseInfo
 {
 public:
-    Token mType;
+    std::string getFullName() const override { return mScope + mType.getLexeme() + mIdentifier.getLexeme(); }
 };
 
 class EnumInfo : public BaseInfo
@@ -30,12 +35,15 @@ class EnumInfo : public BaseInfo
 
 class FunctionInfo : public BaseInfo
 {
+public:
+    std::string getFullName() const override { return mScope + mType.getLexeme() + mIdentifier.getLexeme(); }
 };
 
 class Registry
 {
 private:
     std::map<std::string, ClassInfo> mClassesInfo;
+    std::map<std::string, TypeInfo> mTypesInfo;
     std::map<std::string, VariableInfo> mVariablesInfo;
     std::map<std::string, EnumInfo> mEnumsInfo;
     std::map<std::string, FunctionInfo> mFunctionsInfo;
@@ -43,18 +51,21 @@ private:
 public:
     Registry() = default;
     void init();
+
+    void registerType(const TypeInfo& info);
+    const TypeInfo* getType(const TypeInfo& info);    
+
     void registerClass(const ClassInfo& info);
-    bool isClass(const std::string& scope, const std::string& name);
-    const ClassInfo& getClass(const std::string& scope, const std::string& name);
+    const ClassInfo* getClass(const ClassInfo& info);
+
     void registerVariable(const VariableInfo& info);
-    bool isVariable(const std::string& scope, const std::string& name);
-    const VariableInfo& getVariable(const std::string& scope, const std::string& name);
+    const VariableInfo* getVariable(const VariableInfo& info);
+
     void registerEnum(const EnumInfo& info);
-    bool isEnum(const std::string& scope, const std::string& name);
-    const EnumInfo& getEnum(const std::string& scope, const std::string& name);
+    const EnumInfo* getEnum(const EnumInfo& info);
+
     void registerFunction(const FunctionInfo& info);
-    bool isFunction(const std::string& scope, const std::string& name);
-    const FunctionInfo& getFunction(const std::string& scope, const std::string& name);
+    const FunctionInfo* getFunction(const FunctionInfo& info);
 };
 
 #endif

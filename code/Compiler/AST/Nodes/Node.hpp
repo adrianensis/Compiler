@@ -5,14 +5,17 @@
 #include "Compiler/Lexer/Token.hpp"
 
 #define DECL_NODE(nodeName) class nodeName: public Node { DECL_PARSE();
+#define DECL_EXPRESSION_NODE(nodeName) class nodeName: public NodeExpression { DECL_PARSE();
 #define DECL_PARSE() public: bool parse() override;
 #define DECL_CODEGEN() public: void generateCode(CodeBuilder& builder) const override;
+#define DECL_GET_TYPE() public: const Token& getTokenType() const override;
 #define DECL_TOKEN(tokenName) public: Token tokenName;
 #define DECL_CHILD(nodeClass, childName) public: class nodeClass* childName = nullptr;
 #define END_NODE() };
 
 #define IMPL_PARSE(nodeName) bool nodeName::parse()
 #define IMPL_CODEGEN(nodeName) void nodeName::generateCode(CodeBuilder& builder) const
+#define IMPL_GET_TYPE(nodeName) const Token& nodeName::getTokenType() const
 
 class Parser;
 class CodeBuilder;
@@ -135,6 +138,17 @@ private:
     u32 mTokensParsed = 0;
 public:
     CRGET(Children)
+};
+
+class NodeExpression : public Node 
+{
+// public: 
+//     virtual const Token& getTokenType() const { return mTypeNodeExpression ? mTypeNodeExpression->getTokenType() : mTypeExpressionToken; }
+//     void setTokenType(const Token& tokenType) { mTypeExpressionToken = tokenType; }
+//     void setNodeType(const NodeExpression* nodeExpression) { mTypeNodeExpression = nodeExpression; }
+// private:
+//     Token mTypeExpressionToken;
+//     const NodeExpression* mTypeNodeExpression = nullptr;
 };
 
 #endif

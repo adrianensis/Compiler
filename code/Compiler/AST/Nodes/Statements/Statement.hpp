@@ -31,6 +31,12 @@ DECL_NODE(StatementBranch)
     DECL_CHILD(StatementBlock, mStatementBody);
 END_NODE()
 
+DECL_NODE(StatementTypeAlias)
+    DECL_CODEGEN()
+    DECL_TOKEN(mTokenIdentifier);
+    DECL_CHILD(StatementType, mStatementType);
+END_NODE()
+
 // ******* DEFINITION *******
 DECL_NODE(StatementDefinition)
 END_NODE()
@@ -71,7 +77,7 @@ DECL_NODE(StatementVariableDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
     DECL_CHILD(StatementExpression, mStatementExpression);
-    DECL_CHILD(StatementType, mStatementType);
+    DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
 END_NODE()
 
 DECL_NODE(StatementGlobalVariableDefinition)
@@ -90,7 +96,7 @@ END_NODE()
 
 DECL_NODE(StatementFunctionDefinition)
     DECL_CODEGEN()
-    DECL_CHILD(StatementType, mStatementType);
+    DECL_CHILD(StatementTypeQualifierFunctionReturn, mStatementTypeQualifierFunctionReturn);
     DECL_CHILD(StatementFunctionBaseDefinition, mStatementFunctionBaseDefinition);
 END_NODE()
 
@@ -102,7 +108,7 @@ END_NODE()
 DECL_NODE(StatementParameterDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
-    DECL_CHILD(StatementType, mStatementType);
+    DECL_CHILD(StatementTypeQualifierParameter, mStatementTypeQualifierParameter);
 END_NODE()
 
 DECL_NODE(StatementParametersList)
@@ -117,54 +123,62 @@ DECL_NODE(StatementAssignment)
 END_NODE()
 
 // ******* EXPRESSION *******
-DECL_NODE(StatementExpression)
+DECL_EXPRESSION_NODE(StatementExpression)
+    DECL_CHILD(NodeExpression, mNodeExpression);
 END_NODE()
 
-DECL_NODE(StatementExpressionPrimary)
+DECL_EXPRESSION_NODE(StatementExpressionPrimary)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenExpression);
+    DECL_CHILD(StatementExpressionInvocation, mStatementExpressionInvocation);
+    DECL_CHILD(StatementExpression, mStatementExpression);
 END_NODE()
 
-DECL_NODE(StatementExpressionUnary)
+DECL_EXPRESSION_NODE(StatementExpressionUnary)
     DECL_CODEGEN()
     DECL_CHILD(StatementUnaryOperator, mStatementUnaryOperatorPre);
     DECL_CHILD(StatementUnaryOperator, mStatementUnaryOperatorPost);
     DECL_CHILD(StatementExpressionPrimary, mStatementExpressionPrimary);
 END_NODE()
 
-DECL_NODE(StatementExpressionBinary)
+DECL_EXPRESSION_NODE(StatementExpressionBinary)
     DECL_CODEGEN()
     DECL_CHILD(StatementBinaryOperator, mStatementBinaryOperator);
     DECL_CHILD(StatementExpressionPrimary, mStatementExpressionPrimary);
     DECL_CHILD(StatementExpression, mStatementExpression);
 END_NODE()
 
-DECL_NODE(StatementExpressionInvocation)
+DECL_EXPRESSION_NODE(StatementExpressionInvocation)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenThis);
-END_NODE()
-
-DECL_NODE(StatementExpressionSimpleInvocation)
-END_NODE()
-
-DECL_NODE(StatementExpressionCompoundInvocation)
-    DECL_CODEGEN()
-    DECL_CHILD(StatementExpressionSimpleInvocation, mStatementExpressionSimpleInvocation);
     DECL_CHILD(StatementExpressionCompoundInvocation, mStatementExpressionCompoundInvocation);
 END_NODE()
 
-DECL_NODE(StatementExpressionVariableInvocation)
+DECL_EXPRESSION_NODE(StatementExpressionSimpleInvocation)
+    DECL_CODEGEN()
+    DECL_CHILD(StatementExpressionVariableInvocation, mStatementExpressionVariableInvocation);
+    DECL_CHILD(StatementExpressionFunctionInvocation, mStatementExpressionFunctionInvocation);
+END_NODE()
+
+DECL_EXPRESSION_NODE(StatementExpressionCompoundInvocation)
+    DECL_CODEGEN()
+    DECL_CHILD(StatementExpressionSimpleInvocation, mStatementExpressionSimpleInvocation);
+    DECL_TOKEN(mTokenAccessOperator);
+    DECL_CHILD(StatementExpressionCompoundInvocation, mStatementExpressionCompoundInvocation);
+END_NODE()
+
+DECL_EXPRESSION_NODE(StatementExpressionVariableInvocation)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
 END_NODE()
 
-DECL_NODE(StatementExpressionFunctionInvocation)
+DECL_EXPRESSION_NODE(StatementExpressionFunctionInvocation)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
     DECL_CHILD(StatementExpressionFunctionParametersList, mStatementExpressionFunctionParametersList);
 END_NODE()
 
-DECL_NODE(StatementExpressionFunctionParametersList)
+DECL_EXPRESSION_NODE(StatementExpressionFunctionParametersList)
     DECL_CODEGEN()
 END_NODE()
 
@@ -183,6 +197,21 @@ END_NODE()
 DECL_NODE(StatementType)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenType);
+END_NODE()
+
+DECL_NODE(StatementTypeQualifier)
+    DECL_CODEGEN()
+    DECL_CHILD(StatementType, mStatementType);
+END_NODE()
+
+DECL_NODE(StatementTypeQualifierParameter)
+    DECL_CODEGEN()
+    DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
+END_NODE()
+
+DECL_NODE(StatementTypeQualifierFunctionReturn)
+    DECL_CODEGEN()
+    DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
 END_NODE()
 
 #endif

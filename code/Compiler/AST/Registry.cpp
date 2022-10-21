@@ -1,73 +1,71 @@
 #include "Compiler/AST/Registry.hpp"
 
+void Registry::registerType(const TypeInfo& info)
+{
+    if(!getType(info))
+    {
+        MAP_INSERT(mTypesInfo, info.getFullName(), info);
+    }
+}
+
+const TypeInfo* Registry::getType(const TypeInfo& info)
+{
+    std::string key = info.getFullName();
+    return MAP_CONTAINS(mTypesInfo, key) ? &mTypesInfo.at(key) : nullptr;
+}
+
 void Registry::registerClass(const ClassInfo& info)
 {
-    if(!isClass(info.mScope, info.mIdentifier.getLexeme()))
+    if(!getClass(info))
     {
         MAP_INSERT(mClassesInfo, info.getFullName(), info);
     }
 }
 
-bool Registry::isClass(const std::string& scope, const std::string& name)
+const ClassInfo* Registry::getClass(const ClassInfo& info)
 {
-    return MAP_CONTAINS(mClassesInfo, scope + name);
-}
-
-const ClassInfo& Registry::getClass(const std::string& scope, const std::string& name)
-{
-    return mClassesInfo.at(scope + name);
+    std::string key = info.getFullName();
+    return MAP_CONTAINS(mClassesInfo, key) ? &mClassesInfo.at(key) : nullptr;
 }
 
 void Registry::registerVariable(const VariableInfo& info)
 {
-    if(!isVariable(info.mScope, info.mIdentifier.getLexeme()))
+    if(!getVariable(info))
     {
         MAP_INSERT(mVariablesInfo, info.getFullName(), info);
     }
 }
 
-bool Registry::isVariable(const std::string& scope, const std::string& name)
+const VariableInfo* Registry::getVariable(const VariableInfo& info)
 {
-    return MAP_CONTAINS(mVariablesInfo, scope + name);
-}
-
-const VariableInfo& Registry::getVariable(const std::string& scope, const std::string& name)
-{
-    return mVariablesInfo.at(scope + name);
+    std::string key = info.getFullName();
+    return MAP_CONTAINS(mVariablesInfo, key) ? &mVariablesInfo.at(key) : nullptr;
 }
 
 void Registry::registerEnum(const EnumInfo& info)
 {
-    if(!isEnum(info.mScope, info.mIdentifier.getLexeme()))
+    if(!getEnum(info))
     {
         MAP_INSERT(mEnumsInfo, info.getFullName(), info);
     }
 }
 
-bool Registry::isEnum(const std::string& scope, const std::string& name)
+const EnumInfo* Registry::getEnum(const EnumInfo& info)
 {
-    return MAP_CONTAINS(mEnumsInfo, scope + name);
-}
-
-const EnumInfo& Registry::getEnum(const std::string& scope, const std::string& name)
-{
-    return mEnumsInfo.at(scope + name);
+    std::string key = info.getFullName();
+    return MAP_CONTAINS(mEnumsInfo, key) ? &mEnumsInfo.at(key) : nullptr;
 }
 
 void Registry::registerFunction(const FunctionInfo& info)
 {
-    if(!isFunction(info.mScope, info.mIdentifier.getLexeme()))
+    if(!getFunction(info))
     {
         MAP_INSERT(mFunctionsInfo, info.getFullName(), info);
     }
 }
 
-bool Registry::isFunction(const std::string& scope, const std::string& name)
+const FunctionInfo* Registry::getFunction(const FunctionInfo& info)
 {
-    return MAP_CONTAINS(mFunctionsInfo, scope + name);
-}
-
-const FunctionInfo& Registry::getFunction(const std::string& scope, const std::string& name)
-{
-    return mFunctionsInfo.at(scope + name);
+    std::string key = info.getFullName();
+    return MAP_CONTAINS(mFunctionsInfo, key) ? &mFunctionsInfo.at(key) : nullptr;
 }
