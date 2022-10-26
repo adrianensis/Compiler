@@ -6,7 +6,7 @@ Vector2::Vector2()
 
 }
 
-Vector2::Vector2(f32 x,f32 y)
+Vector2::Vector2(f32*x,f32*y)
 {
     this->x=x;;
     this->y=y;;
@@ -20,7 +20,7 @@ Vector2::Vector2(Vector2&other)
 
 }
 
-Vector2&Vector2::set(f32 x,f32 y)
+Vector2&Vector2::set(f32*x,f32*y)
 {
     this->x=x;;
     this->y=y;;
@@ -67,7 +67,7 @@ Vector2&Vector2::div(Vector2&rhs)
 
 }
 
-Vector2&Vector2::add(f32 rhs)
+Vector2&Vector2::add(f32*rhs)
 {
     x=x+rhs;;
     y=y+rhs;;
@@ -75,7 +75,7 @@ Vector2&Vector2::add(f32 rhs)
 
 }
 
-Vector2&Vector2::sub(f32 rhs)
+Vector2&Vector2::sub(f32*rhs)
 {
     x=x-rhs;;
     y=y-rhs;;
@@ -83,7 +83,7 @@ Vector2&Vector2::sub(f32 rhs)
 
 }
 
-Vector2&Vector2::mul(f32 rhs)
+Vector2&Vector2::mul(f32*rhs)
 {
     x=x*rhs;;
     y=y*rhs;;
@@ -91,7 +91,7 @@ Vector2&Vector2::mul(f32 rhs)
 
 }
 
-Vector2&Vector2::div(f32 rhs)
+Vector2&Vector2::div(f32*rhs)
 {
     x=x/rhs;;
     y=y/rhs;;
@@ -99,39 +99,39 @@ Vector2&Vector2::div(f32 rhs)
 
 }
 
-f32 Vector2::dot(Vector2&v)const
+f32*Vector2::dot(Vector2&v)const
 {
     return this->x*v.x+this->y*v.y;;
 
 }
 
-f32 Vector2::sqrlen()const
+f32*Vector2::sqrlen()const
 {
     return this->dot(*this);;
 
 }
 
-f32 Vector2::sqrdst(Vector2&v)const
+f32*Vector2::sqrdst(Vector2&v)const
 {
-    Vector2 sub=Vector2(v)-*this;
+    Vector2 sub=Vector2(v).sub(*this);
     ;
     return sub.dot(sub);;
 
 }
 
-f32 Vector2::len()const
+f32*Vector2::len()const
 {
     return sqrtf(this->sqrlen());;
 
 }
 
-f32 Vector2::max()const
+f32*Vector2::max()const
 {
     return std::max(x,y);;
 
 }
 
-f32 Vector2::min()const
+f32*Vector2::min()const
 {
     return std::min(x,y);;
 
@@ -146,32 +146,7 @@ Vector2&Vector2::nor()
 
 }
 
-f32 Vector2::dst(Vector2&v)const
-{
-    return sqrtf(this->sqrdst(v));;
-
-}
-
-bool Vector2::eq(Vector2&v)const
-{
-    return MathUtils::eqf(this->x,v.x)&&MathUtils::eqf(this->y,v.y);;
-
-}
-
-bool Vector2::eq(Vector2&v,f32 e)const
-{
-    return MathUtils::eqf(this->x,v.x,e)&&MathUtils::eqf(this->y,v.y,e);;
-
-}
-
-Vector2&Vector2::lerp(Vector2&target,f32 t)
-{
-    (*this)+=Vector2(target).sub(*this).mul(t);
-    return*this;;
-
-}
-
-f32 Vector2::angle(Vector2&v)const
+f32*Vector2::angle(Vector2&v)const
 {
     f32 angle=atan2f(v.y,v.x)-atan2f(this->y,this->x);
     ;
@@ -184,7 +159,7 @@ f32 Vector2::angle(Vector2&v)const
 
 }
 
-Vector2&Vector2::clamp(f32 maxLength)
+Vector2&Vector2::clamp(f32*maxLength)
 {
     if(this->sqrlen()>maxLength*maxLength){
         this->nor();

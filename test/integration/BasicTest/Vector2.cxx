@@ -1,4 +1,4 @@
-class Vector2
+stack class Vector2
 {
 public:
 
@@ -131,7 +131,7 @@ public:
 
     f32 sqrdst(Vector2 v) const
     {
-        Vector2 sub = Vector2(v) - (this);
+        Vector2 sub = Vector2(v).sub(this);
         return sub.dot(sub);
     }
 
@@ -160,26 +160,26 @@ public:
         return this;
     }
 
-    f32 dst(Vector2 v) const
-    {
-        return sqrtf(this.sqrdst(v));
-    }
+    // f32 dst(Vector2 v) const
+    // {
+    //     return sqrtf(this.sqrdst(v));
+    // }
 
-    bool eq(Vector2 v) const
-    {
-        return MathUtils::eqf(this.x, v.x) && MathUtils::eqf(this.y, v.y);
-    }
+    // bool eq(Vector2 v) const
+    // {
+    //     return MathUtils::eqf(this.x, v.x) && MathUtils::eqf(this.y, v.y);
+    // }
 
-    bool eq(Vector2 v, f32 e) const
-    {
-        return MathUtils::eqf(this.x, v.x, e) && MathUtils::eqf(this.y, v.y, e);
-    }
+    // bool eq(Vector2 v, f32 e) const
+    // {
+    //     return MathUtils::eqf(this.x, v.x, e) && MathUtils::eqf(this.y, v.y, e);
+    // }
 
-    Vector2 lerp(Vector2 target, f32 t)
-    {
-        (this) += Vector2(target).sub(this).mul(t);
-        return this;
-    }
+    // Vector2 lerp(Vector2 target, f32 t)
+    // {
+    //     (this) += Vector2(target).sub(this).mul(t);
+    //     return this;
+    // }
 
     f32 angle(Vector2 v) const
     {

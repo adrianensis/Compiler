@@ -1,4 +1,5 @@
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
+#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
 #include "Compiler/Utils/CharUtils.hpp"
@@ -61,11 +62,11 @@ void CodeBuilder::unindent()
     }
 }
 
-void CodeBuilder::addScope()
+void CodeBuilder::addScope(const ScopeBuilder& scopeBuilder)
 {
-    if(mScopeBuilder.hasScope())
+    if(scopeBuilder.hasScope())
     {
-        addString(mScopeBuilder.getScope());
+        addString(scopeBuilder.getScope());
         addString("::");
     }
 }

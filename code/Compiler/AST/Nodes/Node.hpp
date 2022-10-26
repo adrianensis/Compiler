@@ -3,6 +3,7 @@
 
 #include "Core/Module.hpp"
 #include "Compiler/Lexer/Token.hpp"
+#include "Compiler/AST/Registry.hpp"
 
 #define DECL_NODE(nodeName) class nodeName: public Node { DECL_PARSE();
 #define DECL_EXPRESSION_NODE(nodeName) class nodeName: public NodeExpression { DECL_PARSE();
@@ -19,7 +20,6 @@
 
 class Parser;
 class CodeBuilder;
-class Registry;
 class ScopeBuilder;
 
 class Node 
@@ -47,22 +47,26 @@ protected:
         while(expectNode<NodeType>());
     }
     template <class NodeType>
+    NodeType* expectNodeTerminated(const TokenType& tailToken) 
+    {
+        NodeType* node = expectNode<NodeType>();
+        if(node)
+        {
+            if(expectTokenOrError(tailToken))
+            {
+                return node;
+            }
+        }   
+
+        return nullptr;
+    }
+    template <class NodeType>
     NodeType* expectNodeEnclosed(const TokenType& leftToken, const TokenType& rightToken) 
     {
         if(expectToken(leftToken))
         {
-            NodeType* node = expectNode<NodeType>();
-            if(node)
-            {
-                if(expectToken(rightToken))
-                {
-                    return node;
-                }
-                else
-                {
-                    logError("Expected: " + rightToken.getValue());
-                }
-            }
+            NodeType* node = expectNodeTerminated<NodeType>(rightToken);
+            return node;
         }
 
         return nullptr;
@@ -142,13 +146,14 @@ public:
 
 class NodeExpression : public Node 
 {
-// public: 
-//     virtual const Token& getTokenType() const { return mTypeNodeExpression ? mTypeNodeExpression->getTokenType() : mTypeExpressionToken; }
-//     void setTokenType(const Token& tokenType) { mTypeExpressionToken = tokenType; }
-//     void setNodeType(const NodeExpression* nodeExpression) { mTypeNodeExpression = nodeExpression; }
-// private:
-//     Token mTypeExpressionToken;
-//     const NodeExpression* mTypeNodeExpression = nullptr;
+public: 
+    virtual const BaseInfo& getRootTypeInfo() const { return mRootTypeNode ? mRootTypeNode->getRootTypeInfo() : mRootTypeInfo; }
+    void setRootTypeInfo(const BaseInfo& info) { mRootTypeInfo = info; }
+    void setRootTypeNode(const NodeExpression* nodeExpression) { mRootTypeNode = nodeExpression; }
+    bool isPointer() const;
+private:
+    BaseInfo mRootTypeInfo;
+    const NodeExpression* mRootTypeNode = nullptr;
 };
 
 #endif

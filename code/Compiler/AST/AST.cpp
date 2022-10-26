@@ -4,6 +4,8 @@
 
 AST::~AST() 
 {
+    DELETE_CONTENT(mModules);
+    DELETE_CONTENT(mParsers);
 }
 
 void AST::addFile(const std::string& path)
@@ -38,6 +40,8 @@ void AST::generateCode()
 
 void AST::parse(const std::string& path, const std::string& content)
 {
+    std::cout << "PARSING " << path << std::endl;
+
     Parser* parser = new Parser(content, mRegistry);
     mParsers.push_back(parser);
     parser->mPath = path;
@@ -52,6 +56,8 @@ void AST::parse(const std::string& path, const std::string& content)
 
 void AST::generateCode(const std::string& path, StatementModule* module)
 {
+    std::cout << "CODE BUILDING " << path << std::endl;
+
     CodeBuilder builderHeader;
     builderHeader.setFileName(std::filesystem::path( path ).filename());
     builderHeader.mGenerateHeaderCode = true;

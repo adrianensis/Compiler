@@ -12,11 +12,11 @@ END_NODE()
 
 // ******* STATEMENT *******
 DECL_NODE(Statement)
-    DECL_CODEGEN();
+    DECL_CODEGEN()
 END_NODE()
 
 DECL_NODE(StatementBlock)
-    DECL_CODEGEN();
+    DECL_CODEGEN()
 END_NODE()
 
 DECL_NODE(StatementJump)
@@ -44,6 +44,7 @@ END_NODE()
 // ******* CLASS DEFINITION *******
 DECL_NODE(StatementClassDefinition)
     DECL_CODEGEN()
+    DECL_TOKEN(mTokenStack)
     DECL_TOKEN(mTokenIdentifier)
 END_NODE()
 

@@ -3,6 +3,7 @@
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
 #include "Compiler/AST/Registry.hpp"
 
+// ******* MODULE *******
 IMPL_PARSE(StatementModule)
 {
     expectRepeatNode<StatementDefinition>();
@@ -10,55 +11,22 @@ IMPL_PARSE(StatementModule)
     const Token* token = mParser->getCurrentToken();
     if(!token->is(TokensDefinitions::End))
     {
-        logError("");
+        logError("Module doesn't compile!");
     }
 
     return true;
 }
 
+// ******* STATEMENT *******
 IMPL_PARSE(Statement)
 {
-    if(expectNode<StatementBlock>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementBranch>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementJump>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementVariableDefinition>())
-    {
-        if(expectTokenOrError(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-    else if(expectNode<StatementTypeAlias>())
-    {
-        if(expectTokenOrError(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-    else if(expectNode<StatementAssignment>())
-    {
-        if(expectTokenOrError(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-    else if(expectNode<StatementExpression>())
-    {
-        if(expectTokenOrError(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-
+    if(expectNode<StatementBlock>()) { return true; }
+    if(expectNode<StatementBranch>()) { return true; }
+    if(expectNode<StatementJump>()) { return true; }
+    if(expectNodeTerminated<StatementVariableDefinition>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNodeTerminated<StatementAssignment>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNodeTerminated<StatementExpression>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNodeTerminated<StatementTypeAlias>(TokensDefinitions::Semicolon)) { return true; }
     return false;
 }
 
@@ -69,23 +37,21 @@ IMPL_PARSE(StatementBlock)
 
 IMPL_PARSE(StatementJump)
 {
-    bool tokenFound = false;
     if(expectToken(TokensDefinitions::Return, &mTokenJump))
     {
-        mStatementExpression = expectNode<StatementExpression>();
-
-        tokenFound = true;
+        if(mStatementExpression = expectNodeTerminated<StatementExpression>(TokensDefinitions::Semicolon))
+        {
+            return true;
+        }
     }
     else if(expectToken(TokensDefinitions::Break, &mTokenJump))
     {
-        tokenFound = true;
+        if(expectTokenOrError(TokensDefinitions::Semicolon))
+        {
+            return true;
+        }
     }
     else if(expectToken(TokensDefinitions::Continue, &mTokenJump))
-    {
-        tokenFound = true;
-    }
-
-    if(tokenFound)
     {
         if(expectTokenOrError(TokensDefinitions::Semicolon))
         {
@@ -125,11 +91,8 @@ IMPL_PARSE(StatementTypeAlias)
                     TypeInfo infoType;
                     infoType.mIdentifier = mTokenIdentifier;
                     infoType.mScope = getScopeBuilder().getScope();
-                    if(!getRegistry().getType(infoType))
-                    {
-                        infoType.mPath = mParser->mPath;
-                        getRegistry().registerType(infoType);
-                    }
+                    infoType.mPath = mParser->mPath;
+                    getRegistry().registerInfo(infoType);
 
                     return true;
                 }
@@ -140,37 +103,24 @@ IMPL_PARSE(StatementTypeAlias)
     return false;
 }
 
+// ******* DEFINITION *******
 IMPL_PARSE(StatementDefinition)
 {
-    if(expectNode<StatementTypeAlias>())
-    {
-        if(expectTokenOrError(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-    else if(expectNode<StatementClassDefinition>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementEnumDefinition>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementFunctionDefinition>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementGlobalVariableDefinition>())
-    {
-        return true;
-    }
-
+    if(expectNodeTerminated<StatementTypeAlias>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNodeTerminated<StatementClassDefinition>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNode<StatementEnumDefinition>()) { return true; }
+    if(expectNode<StatementFunctionDefinition>()) { return true; }
+    if(expectNodeTerminated<StatementGlobalVariableDefinition>(TokensDefinitions::Semicolon)) { return true; }
     return false;
 }
 
+// ******* CLASS DEFINITION *******
 IMPL_PARSE(StatementClassDefinition)
 {
+    if(expectToken(TokensDefinitions::Stack, &mTokenStack))
+    {
+    }
+
     if(expectToken(TokensDefinitions::Class))
     {
         if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
@@ -178,24 +128,16 @@ IMPL_PARSE(StatementClassDefinition)
             getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
             if(expectRepeatNodeEnclosed<StatementClassDefinitionItem>(TokensDefinitions::LeftCurly, TokensDefinitions::RightCurly))
             {
-                if(expectTokenOrError(TokensDefinitions::Semicolon))
-                {
-                    getScopeBuilder().popScope();
+                getScopeBuilder().popScope();
 
-                    ClassInfo infoClass;
-                    infoClass.mIdentifier = mTokenIdentifier;
-                    infoClass.mScope = getScopeBuilder().getScope();
-                    if(!getRegistry().getClass(infoClass))
-                    {
-                        infoClass.mPath = mParser->mPath;
-                        getRegistry().registerClass(infoClass);
-                        return true;
-                    }
-                    else
-                    {
-                        logError("Duplicated class " + mTokenIdentifier.getLexeme());
-                    }
-                }
+                TypeInfo info;
+                info.mIdentifier = mTokenIdentifier;
+                info.mDataType = DataType::TYPE_CLASS;
+                info.mIsStack = !mTokenStack.getIsNull();
+                info.mScope = getScopeBuilder().getScope();
+                info.mPath = mParser->mPath;
+                getRegistry().registerInfo(info);
+                return true;
             }
             getScopeBuilder().popScope();
         }
@@ -206,92 +148,48 @@ IMPL_PARSE(StatementClassDefinition)
 
 IMPL_PARSE(StatementClassDefinitionItem)
 {
-    if(expectNode<StatementClassVisibility>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementMemberVariableDefinition>())
-    {
-        if(expectToken(TokensDefinitions::Semicolon))
-        {
-            return true;
-        }
-    }
-    else if(expectNode<StatementConstructorDefinition>())
-    {
-        return true;
-    }
-    else if(expectNode<StatementMemberFunctionDefinition>())
-    {
-        return true;
-    }
-
+    if(expectNodeTerminated<StatementClassDefinition>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNodeTerminated<StatementClassVisibility>(TokensDefinitions::Colon)) { return true; }
+    if(expectNodeTerminated<StatementMemberVariableDefinition>(TokensDefinitions::Semicolon)) { return true; }
+    if(expectNode<StatementConstructorDefinition>()) { return true; }
+    if(expectNode<StatementMemberFunctionDefinition>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementClassVisibility)
 {
-    bool visibilityFound = false;
-    if(expectToken(TokensDefinitions::Public, &mTokenVisibility))
-    {
-        visibilityFound = true;
-    }
-    else if(expectToken(TokensDefinitions::Protected, &mTokenVisibility))
-    {
-        visibilityFound = true;
-    }
-    else if(expectToken(TokensDefinitions::Private, &mTokenVisibility))
-    {
-        visibilityFound = true;
-    }
-
-    if(visibilityFound)
-    {
-        if(expectToken(TokensDefinitions::Colon))
-        {
-            return true;
-        }
-    }
-
+    if(expectToken(TokensDefinitions::Public, &mTokenVisibility)) { return true; }
+    if(expectToken(TokensDefinitions::Protected, &mTokenVisibility)) { return true; }
+    if(expectToken(TokensDefinitions::Private, &mTokenVisibility)) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementConstructorDefinition)
 {
-    if(expectNode<StatementFunctionBaseDefinition>())
-    {
-        return true;
-    }
-
+    if(expectNode<StatementFunctionBaseDefinition>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementMemberVariableDefinition)
 {
-    if(mStatementVariableDefinition = expectNode<StatementVariableDefinition>())
-    {
-        return true;
-    }
-
+    if(mStatementVariableDefinition = expectNode<StatementVariableDefinition>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementMemberFunctionDefinition)
 {
-    if(mStatementFunctionDefinition = expectNode<StatementFunctionDefinition>())
-    {
-        return true;
-    }
-
+    if(mStatementFunctionDefinition = expectNode<StatementFunctionDefinition>()) { return true; }
     return false;
 }
 
+// ******* ENUM DEFINITION *******
 IMPL_PARSE(StatementEnumDefinition)
 {
 
     return false;
 }
 
+// ******* VARIABLE DEFINITION *******
 IMPL_PARSE(StatementVariableDefinition)
 {
     if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>())
@@ -312,14 +210,7 @@ IMPL_PARSE(StatementVariableDefinition)
                     infoVariable.mIdentifier = mTokenIdentifier;
                     infoVariable.mType = mStatementTypeQualifier->mStatementType->mTokenType;
                     infoVariable.mScope = getScopeBuilder().getScope();
-                    if(!getRegistry().getVariable(infoVariable))
-                    {
-                        getRegistry().registerVariable(infoVariable);
-                    }
-                    else
-                    {
-                        logError("Duplicated " + mTokenIdentifier.getLexeme());
-                    }
+                    getRegistry().registerInfo(infoVariable);
 
                     return true;
                 }
@@ -332,14 +223,11 @@ IMPL_PARSE(StatementVariableDefinition)
 
 IMPL_PARSE(StatementGlobalVariableDefinition)
 {
-    if(expectNode<StatementVariableDefinition>())
-    {
-        return true;
-    }
-
+    if(expectNode<StatementVariableDefinition>()) { return true;  }
     return false;
 }
 
+// ******* FUNCTION DEFINITION *******
 IMPL_PARSE(StatementFunctionDefinition)
 {
     if(mStatementTypeQualifierFunctionReturn = expectNode<StatementTypeQualifierFunctionReturn>())
@@ -350,14 +238,7 @@ IMPL_PARSE(StatementFunctionDefinition)
             infoFunction.mIdentifier = mStatementFunctionBaseDefinition->mTokenIdentifier;
             infoFunction.mType = mStatementTypeQualifierFunctionReturn->mStatementTypeQualifier->mStatementType->mTokenType;
             infoFunction.mScope = getScopeBuilder().getScope();
-            if(!getRegistry().getFunction(infoFunction))
-            {
-                getRegistry().registerFunction(infoFunction);
-            }
-            else
-            {
-                //logError("Duplicated " + mStatementFunctionBaseDefinition->mTokenIdentifier.getLexeme());
-            }
+            getRegistry().registerInfo(infoFunction);
 
             return true;
         }
@@ -392,11 +273,7 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
 
 IMPL_PARSE(StatementFunctionQualifier)
 {
-    if(expectToken(TokensDefinitions::Const, &mTokenQualifier))
-    {
-        return true;
-    }
-
+    if(expectToken(TokensDefinitions::Const, &mTokenQualifier)) { return true;  }
     return false;
 }
 
@@ -410,15 +287,7 @@ IMPL_PARSE(StatementParameterDefinition)
             infoVariable.mIdentifier = mTokenIdentifier;
             infoVariable.mType = mStatementTypeQualifierParameter->mStatementTypeQualifier->mStatementType->mTokenType;
             infoVariable.mScope = getScopeBuilder().getScope();
-            if(!getRegistry().getVariable(infoVariable))
-            {
-                getRegistry().registerVariable(infoVariable);
-            }
-            // Duplicated params are allowed
-            // else
-            // {
-            //     logError("Duplicated " + mTokenIdentifier.getLexeme());
-            // }
+            getRegistry().registerInfo(infoVariable);
             return true;
         }
     }
@@ -428,14 +297,11 @@ IMPL_PARSE(StatementParameterDefinition)
 
 IMPL_PARSE(StatementParametersList)
 {
-    if(expectNodeListEnclosed<StatementParameterDefinition>(TokensDefinitions::Comma, TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-    {
-        return true;
-    }
-
+    if(expectNodeListEnclosed<StatementParameterDefinition>(TokensDefinitions::Comma, TokensDefinitions::LeftParen, TokensDefinitions::RightParen)) { return true;  }
     return false;
 }
 
+// ******* ASSIGNMENT *******
 IMPL_PARSE(StatementAssignment)
 {
     if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>())
@@ -452,30 +318,13 @@ IMPL_PARSE(StatementAssignment)
     return false;
 }
 
+// ******* EXPRESSION *******
 IMPL_PARSE(StatementExpression)
 {
-    if(mNodeExpression = expectNode<StatementExpressionBinary>())
-    {
-
-    }
-    else if(mNodeExpression = expectNode<StatementExpressionUnary>())
-    {
-
-    }
-    else if(mNodeExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-    {
-
-    }
-    else if(mNodeExpression = expectNode<StatementExpressionPrimary>())
-    {
-
-    }
-
-    if(mNodeExpression)
-    {
-        return true;
-    }
-
+    if(mNodeExpression = expectNode<StatementExpressionBinary>()) { return true; }
+    if(mNodeExpression = expectNode<StatementExpressionUnary>()) { return true; }
+    if(mNodeExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen)) { return true; }
+    if(mNodeExpression = expectNode<StatementExpressionPrimary>()) { return true; }
     return false;
 }
 
@@ -517,27 +366,11 @@ IMPL_PARSE(StatementExpressionBinary)
 
 IMPL_PARSE(StatementExpressionPrimary)
 {
-    if(expectToken(TokensDefinitions::Number, &mTokenExpression))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::True, &mTokenExpression))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::False, &mTokenExpression))
-    {
-        return true;
-    }
-    else if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>())
-    {
-        return true;
-    }
-    else if(mStatementExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-    {
-        return true;
-    }
-
+    if(expectToken(TokensDefinitions::Number, &mTokenExpression)) { return true; }
+    if(expectToken(TokensDefinitions::True, &mTokenExpression)) { return true; }
+    if(expectToken(TokensDefinitions::False, &mTokenExpression)) { return true; }
+    if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>()) { return true; }
+    if(mStatementExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen)) { return true; }
     return false;
 }
 
@@ -555,7 +388,7 @@ IMPL_PARSE(StatementExpressionInvocation)
 
         return true;
     }
-    else if(mStatementExpressionCompoundInvocation = expectNode<StatementExpressionCompoundInvocation>())
+    if(mStatementExpressionCompoundInvocation = expectNode<StatementExpressionCompoundInvocation>())
     {
         return true;
     }
@@ -567,13 +400,14 @@ IMPL_PARSE(StatementExpressionSimpleInvocation)
 {
     if(mStatementExpressionFunctionInvocation = expectNode<StatementExpressionFunctionInvocation>())
     {
+        setRootTypeNode(mStatementExpressionFunctionInvocation);
         return true;
     }
-    else if(mStatementExpressionVariableInvocation = expectNode<StatementExpressionVariableInvocation>())
+    if(mStatementExpressionVariableInvocation = expectNode<StatementExpressionVariableInvocation>())
     {
+        setRootTypeNode(mStatementExpressionVariableInvocation);
         return true;
     }
-
     return false;
 }
 
@@ -585,10 +419,12 @@ IMPL_PARSE(StatementExpressionCompoundInvocation)
         {
             if(mStatementExpressionCompoundInvocation = expectNode<StatementExpressionCompoundInvocation>())
             {
+                setRootTypeNode(mStatementExpressionCompoundInvocation);
                 return true;
             }
         }
 
+        setRootTypeNode(mStatementExpressionSimpleInvocation);
         return true;
     }
 
@@ -599,9 +435,12 @@ IMPL_PARSE(StatementExpressionVariableInvocation)
 {
     if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
     {
+        VariableInfo infoVariable;
+        infoVariable.mIdentifier = mTokenIdentifier;
+        infoVariable.mScope = getScopeBuilder().getScope();
+        setRootTypeInfo(infoVariable);
         return true;
     }
-
     return false;
 }
 
@@ -611,6 +450,7 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
     {
         if(mStatementExpressionFunctionParametersList = expectNode<StatementExpressionFunctionParametersList>())
         {
+            //setRootTypeInfo(mTokenIdentifier);
             return true;
         }
     }
@@ -620,173 +460,75 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
 
 IMPL_PARSE(StatementExpressionFunctionParametersList)
 {
-    if(expectNodeListEnclosed<StatementExpression>(TokensDefinitions::Comma, TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-    {
-        return true;
-    }
-
+    if(expectNodeListEnclosed<StatementExpression>(TokensDefinitions::Comma, TokensDefinitions::LeftParen, TokensDefinitions::RightParen)) { return true; }
     return false;
 }
 
+// ******* OPERATORS *******
 IMPL_PARSE(StatementUnaryOperator)
 {
-    if(expectToken(TokensDefinitions::Increment, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Decrement, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Plus, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Minus, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Exclamation, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Tilde, &mTokenOperator))
-    {
-        return true;
-    }
-
+    if(expectToken(TokensDefinitions::Increment, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Decrement, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Plus, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Minus, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Exclamation, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Tilde, &mTokenOperator)) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementBinaryOperator)
 {
     // multiplicative
-    if(expectToken(TokensDefinitions::Asterisk, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Slash, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Percent, &mTokenOperator))
-    {
-        return true;
-    }
+    if(expectToken(TokensDefinitions::Asterisk, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Slash, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Percent, &mTokenOperator)) { return true; }
     // additive
-    else if(expectToken(TokensDefinitions::Plus, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Minus, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::PlusEqual, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::MinusEqual, &mTokenOperator))
-    {
-        return true;
-    }
+    if(expectToken(TokensDefinitions::Plus, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Minus, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::PlusEqual, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::MinusEqual, &mTokenOperator)) { return true; }
     // relational
-    else if(expectToken(TokensDefinitions::LessThan, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::GreaterThan, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::LessThanEqual, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::GreaterThanEqual, &mTokenOperator))
-    {
-        return true;
-    }
+    if(expectToken(TokensDefinitions::LessThan, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::GreaterThan, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::LessThanEqual, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::GreaterThanEqual, &mTokenOperator)) { return true; }
     // equality
-    else if(expectToken(TokensDefinitions::EqualTo, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::NotEqualTo, &mTokenOperator))
-    {
-        return true;
-    }
+    if(expectToken(TokensDefinitions::EqualTo, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::NotEqualTo, &mTokenOperator)) { return true; }
     // bitwise
-    else if(expectToken(TokensDefinitions::Ampersand, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Caret, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Pipe, &mTokenOperator))
-    {
-        return true;
-    }
+    if(expectToken(TokensDefinitions::Ampersand, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Caret, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Pipe, &mTokenOperator)) { return true; }
     // logic
-    else if(expectToken(TokensDefinitions::And, &mTokenOperator))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Or, &mTokenOperator))
-    {
-        return true;
-    }
-
+    if(expectToken(TokensDefinitions::And, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Or, &mTokenOperator)) { return true; }
     return false;
 }
 
+// ******* TYPE *******
 IMPL_PARSE(StatementType)
 {
-    if(expectToken(TokensDefinitions::Int, &mTokenType))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Float, &mTokenType))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Void, &mTokenType))
-    {
-        return true;
-    }
-    else if(expectToken(TokensDefinitions::Identifier, &mTokenType))
-    {
-        return true;
-    }
-
+    if(expectToken(TokensDefinitions::Int, &mTokenType)) { return true; }
+    if(expectToken(TokensDefinitions::Float, &mTokenType)) { return true; }
+    if(expectToken(TokensDefinitions::Void, &mTokenType)) { return true; }
+    if(expectToken(TokensDefinitions::Identifier, &mTokenType)) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementTypeQualifier)
 {
-    if(mStatementType = expectNode<StatementType>())
-    {
-        return true;
-    }
+    if(mStatementType = expectNode<StatementType>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementTypeQualifierParameter)
 {
-    if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>())
-    {
-        return true;
-    }
+    if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementTypeQualifierFunctionReturn)
 {
-    if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>())
-    {
-        return true;
-    }
+    if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>()) { return true; }
     return false;
 }

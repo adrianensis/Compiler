@@ -145,6 +145,7 @@ public:
     DECLARE_TOKEN_KEYWORD(Unsigned, "unsigned");
     DECLARE_TOKEN_KEYWORD(While, "while");
     DECLARE_TOKEN_KEYWORD(Class, "class");
+    DECLARE_TOKEN_KEYWORD(Stack, "stack");
     DECLARE_TOKEN_KEYWORD(Public, "public");
     DECLARE_TOKEN_KEYWORD(Protected, "protected");
     DECLARE_TOKEN_KEYWORD(Private, "private");

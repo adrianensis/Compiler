@@ -129,3 +129,28 @@ void Node::logError(const std::string& error) const
     }
     std::cout << "ERROR: " << error << std::endl;
 }
+
+bool NodeExpression::isPointer() const
+{
+    bool resultIsPointer = false;
+
+    BaseInfo info = getRootTypeInfo();
+    VariableInfo infoVariable;
+    infoVariable.mIdentifier = info.mIdentifier;
+    infoVariable.mScope = info.mScope;
+    if(getRegistry().getInfo(infoVariable))
+    {
+        TypeInfo info;
+        info.mIdentifier = getRegistry().getInfo(infoVariable)->mType;
+        //infoClass.mScope = info.mScope;
+        if(getRegistry().getInfo(info))
+        {
+            if(!getRegistry().getInfo(info)->mIsStack)
+            {
+                resultIsPointer = true;
+            }
+        }
+    }
+
+    return resultIsPointer;
+}

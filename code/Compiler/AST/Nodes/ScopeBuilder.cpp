@@ -22,12 +22,14 @@ bool ScopeBuilder::hasScope() const
 void ScopeBuilder::regenerateScope()
 {
     mScope.clear();
-    for (const std::string &nameSpace: mScopeVector)
+    for (const std::string &scope: mScopeVector)
     {
         if(!mScope.empty())
         {
             mScope += "::";
         }
-        mScope += nameSpace;
+        mScope += scope;
     }
+
+    //std::cout << "SCOPE " << mScope << std::endl;
 }
