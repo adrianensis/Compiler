@@ -1,4 +1,4 @@
-#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
+#include "Compiler/AST/ScopeBuilder.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
 

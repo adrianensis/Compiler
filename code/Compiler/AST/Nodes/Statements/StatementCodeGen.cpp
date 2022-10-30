@@ -1,7 +1,6 @@
 #include "Compiler/AST/Nodes/Statements/Statement.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
-#include "Compiler/AST/Registry.hpp"
-#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
+#include "Compiler/AST/Context.hpp"
 
 // ******* STATEMENT *******
 IMPL_CODEGEN(Statement)
@@ -62,9 +61,11 @@ IMPL_CODEGEN(StatementClassDefinition)
         builder.addTokenType(TokensDefinitions::LeftCurly);
         builder.newLine();
         builder.indent();
-        getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
+        getContext().pushScope(mTokenIdentifier.getLexeme());
+        getContext().pushClassScope(mTokenIdentifier.getLexeme());
         generateCodeChildren(builder);
-        getScopeBuilder().popScope();
+        getContext().popClassScope();
+        getContext().popScope();
         builder.unindent();
         builder.newLine();
         builder.addTokenType(TokensDefinitions::RightCurly);
@@ -73,17 +74,17 @@ IMPL_CODEGEN(StatementClassDefinition)
     }
     else
     {
-        TypeInfo info;
-        info.mIdentifier = mTokenIdentifier;
-        info.mScope = getScopeBuilder().getScope();
-        if(getRegistry().getInfo(info))
+        const TypeInfo* info = getContext().findTypeInfo(mTokenIdentifier.getLexeme());
+        if(info)
         {
-            builder.includeInSource(getRegistry().getInfo(info)->mPath);
+            builder.includeInSource(info->mPath);
         }
 
-        getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
+        getContext().pushScope(mTokenIdentifier.getLexeme());
+        getContext().pushClassScope(mTokenIdentifier.getLexeme());
         generateCodeChildren(builder);
-        getScopeBuilder().popScope();
+        getContext().popClassScope();
+        getContext().popScope();
     }
 }
 
@@ -113,7 +114,7 @@ IMPL_CODEGEN(StatementMemberFunctionDefinition)
 // ******* VARIABLE DEFINITION *******
 IMPL_CODEGEN(StatementVariableDefinition)
 {
-    mStatementTypeQualifier->generateCode(builder);
+    mStatementTypeQualifierVariable->generateCode(builder);
     builder.addToken(mTokenIdentifier);
     if(mStatementExpression)
     {
@@ -139,12 +140,12 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
 {
     if(!builder.mGenerateHeaderCode)
     {
-        builder.addScope(getScopeBuilder());
+        builder.addScope(getContext());
     }
 
     builder.addToken(mTokenIdentifier);
     
-    getScopeBuilder().pushScope(mTokenIdentifier.getLexeme());
+    getContext().pushScope(mFunctionSignature);
     builder.addTokenType(TokensDefinitions::LeftParen);
     mStatementParametersList->generateCode(builder);
     builder.addTokenType(TokensDefinitions::RightParen);
@@ -164,7 +165,7 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
         mStatementBody->generateCode(builder);
     }
 
-    getScopeBuilder().popScope();
+    getContext().popScope();
 
     builder.newLine();
 }
@@ -182,7 +183,7 @@ IMPL_CODEGEN(StatementFunctionQualifier)
 
 IMPL_CODEGEN(StatementParameterDefinition)
 {
-    mStatementTypeQualifierParameter->generateCode(builder);
+    mStatementTypeQualifierVariable->generateCode(builder);
     builder.addToken(mTokenIdentifier);
 }
 
@@ -213,14 +214,41 @@ IMPL_CODEGEN(StatementAssignment)
 }
 
 // ******* EXPRESSION *******
+IMPL_CODEGEN(StatementExpression)
+{
+    if(mNodeEnclosedExpression)
+    {
+        builder.addTokenType(TokensDefinitions::LeftParen);
+        mNodeEnclosedExpression->generateCode(builder);
+        builder.addTokenType(TokensDefinitions::RightParen);
+    }
+    else
+    {
+        mNodeExpression->generateCode(builder);
+    }
+}
+
 IMPL_CODEGEN(StatementExpressionInvocation)
 {
     if(!mTokenThis.getIsNull())
     {
-        builder.addTokenType(TokensDefinitions::This);
-        if(getChildren().size() > 0)
+        if(mStatementExpressionCompoundInvocation)
         {
+            builder.addTokenType(TokensDefinitions::This);
             builder.addTokenType(TokensDefinitions::Arrow);
+        }
+        else
+        {
+            const TypedDataInfo* typedDataInfo = getContext().findTypedData(getRootTypeIdentifier());
+            const TypeInfo* info = getContext().findTypeInfo(typedDataInfo->mType);
+            if(info)
+            {
+                if(info->mIsStack)
+                {
+                    builder.addTokenType(TokensDefinitions::Asterisk);
+                }
+                builder.addTokenType(TokensDefinitions::This);
+            }
         }
     }
 
@@ -296,24 +324,7 @@ IMPL_CODEGEN(StatementExpressionPrimary)
 {
     if(mTokenExpression.getIsNull())
     {
-        if(mStatementExpression)
-        {
-            builder.addTokenType(TokensDefinitions::LeftParen);
-            mStatementExpression->generateCode(builder);
-            builder.addTokenType(TokensDefinitions::RightParen);
-        }
-        else if(mStatementExpressionInvocation)
-        {
-            if(!mStatementExpressionInvocation->mTokenThis.getIsNull())
-            {
-                if(mStatementExpressionInvocation->getChildren().size() == 0)
-                {
-                    builder.addTokenType(TokensDefinitions::Asterisk);       
-                }
-            }
-
-            mStatementExpressionInvocation->generateCode(builder);
-        }
+        mStatementExpressionInvocation->generateCode(builder);
     }
     else
     {
@@ -358,34 +369,36 @@ IMPL_CODEGEN(StatementType)
 {
     builder.addToken(mTokenType);
     
-    TypeInfo infoType;
-    infoType.mIdentifier = mTokenType;
-    if(getRegistry().getInfo(infoType))
+    const TypeInfo* info = getContext().findTypeInfo(mTokenType.getLexeme());
+    if(info)
     {
-        builder.includeInHeader(getRegistry().getInfo(infoType)->mPath);
+        builder.includeInHeader(info->mPath);
     }
 }
 
 IMPL_CODEGEN(StatementTypeQualifier)
 {
+    builder.addToken(mTokenTypeQualifier);
     mStatementType->generateCode(builder);
 }
 
-IMPL_CODEGEN(StatementTypeQualifierParameter)
+IMPL_CODEGEN(StatementTypeQualifierVariable)
 {
     mStatementTypeQualifier->generateCode(builder);
     
-    TypeInfo info;
-    info.mIdentifier = mStatementTypeQualifier->mStatementType->mTokenType;
-    if(getRegistry().getInfo(info))
+    const TypeInfo* info = getContext().findTypeInfo(mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
+    if(info)
     {
-        if(getRegistry().getInfo(info)->mIsStack)
+        if(info->mDataType == DataType::TYPE_CLASS)
         {
-            builder.addTokenType(TokensDefinitions::Ampersand);
-        }
-        else
-        {
-            builder.addTokenType(TokensDefinitions::Asterisk);
+            if(info->mIsStack)
+            {
+                builder.addTokenType(TokensDefinitions::Ampersand);
+            }
+            else
+            {
+                builder.addTokenType(TokensDefinitions::Asterisk);
+            }
         }
     }
 }
@@ -394,17 +407,20 @@ IMPL_CODEGEN(StatementTypeQualifierFunctionReturn)
 {
     mStatementTypeQualifier->generateCode(builder);
     
-    TypeInfo info;
-    info.mIdentifier = mStatementTypeQualifier->mStatementType->mTokenType;
-    if(getRegistry().getInfo(info))
+    const TypeInfo* info = getContext().findTypeInfo(mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
+
+    if(info)
     {
-        if(getRegistry().getInfo(info)->mIsStack)
+        if(info->mDataType == DataType::TYPE_CLASS)
         {
-            builder.addTokenType(TokensDefinitions::Ampersand);
-        }
-        else
-        {
-            builder.addTokenType(TokensDefinitions::Asterisk);
+            if(info->mIsStack)
+            {
+                builder.addTokenType(TokensDefinitions::Ampersand);
+            }
+            else
+            {
+                builder.addTokenType(TokensDefinitions::Asterisk);
+            }
         }
     }
 }

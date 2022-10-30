@@ -42,7 +42,7 @@ void AST::parse(const std::string& path, const std::string& content)
 {
     std::cout << "PARSING " << path << std::endl;
 
-    Parser* parser = new Parser(content, mRegistry);
+    Parser* parser = new Parser(content);
     mParsers.push_back(parser);
     parser->mPath = path;
     parser->parse();
@@ -50,7 +50,7 @@ void AST::parse(const std::string& path, const std::string& content)
     StatementModule* module = new StatementModule();
     mModules.push_back(module);
     module->mPath = path;
-    module->init(parser);
+    module->init(parser, &mContext);
     module->parse();
 }
 

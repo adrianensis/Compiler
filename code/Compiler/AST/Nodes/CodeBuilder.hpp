@@ -6,7 +6,7 @@
 class Node;
 class Token;
 class TokenType;
-class ScopeBuilder;
+class Context;
 
 class CodeBuilder
 {
@@ -21,7 +21,7 @@ public:
     void indent();
     void unindent();
 
-    void addScope(const ScopeBuilder& scopeBuilder);
+    void addScope(const Context& context);
     
     void includeInHeader(const std::string& string);
     void includeInSource(const std::string& string);

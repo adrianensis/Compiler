@@ -9,7 +9,6 @@
 #define DECL_EXPRESSION_NODE(nodeName) class nodeName: public NodeExpression { DECL_PARSE();
 #define DECL_PARSE() public: bool parse() override;
 #define DECL_CODEGEN() public: void generateCode(CodeBuilder& builder) const override;
-#define DECL_GET_TYPE() public: const Token& getTokenType() const override;
 #define DECL_TOKEN(tokenName) public: Token tokenName;
 #define DECL_CHILD(nodeClass, childName) public: class nodeClass* childName = nullptr;
 #define END_NODE() };
@@ -19,6 +18,7 @@
 #define IMPL_GET_TYPE(nodeName) const Token& nodeName::getTokenType() const
 
 class Parser;
+class Context;
 class CodeBuilder;
 class ScopeBuilder;
 
@@ -27,12 +27,11 @@ class Node
 public:
     Node() = default;
     virtual ~Node();
-    void init (Parser* parser);
+    void init (Parser* parser, Context* context);
     virtual bool parse();
     virtual void generateCode(CodeBuilder& builder) const;
     void generateCodeChildren(CodeBuilder& builder) const;
-    Registry& getRegistry() const;
-    ScopeBuilder& getScopeBuilder() const;
+    Context& getContext() const;
 
 protected:
     template <class NodeType>
@@ -135,24 +134,25 @@ protected:
 
 private:
     Node* internalExpectNode(Node* node);
-protected:
     Parser* mParser = nullptr;
+    Context* mContext = nullptr;
 private:
     std::vector<Node*> mChildren;
     u32 mTokensParsed = 0;
 public:
     CRGET(Children)
+    CGET(Parser)
 };
 
 class NodeExpression : public Node 
 {
 public: 
-    virtual const BaseInfo& getRootTypeInfo() const { return mRootTypeNode ? mRootTypeNode->getRootTypeInfo() : mRootTypeInfo; }
-    void setRootTypeInfo(const BaseInfo& info) { mRootTypeInfo = info; }
+    virtual const std::string& getRootTypeIdentifier() const { return mRootTypeNode ? mRootTypeNode->getRootTypeIdentifier() : mRootTypeIdentifier; }
+    void setRootTypeIdentifier(const std::string& identifier) { mRootTypeIdentifier = identifier; }
     void setRootTypeNode(const NodeExpression* nodeExpression) { mRootTypeNode = nodeExpression; }
     bool isPointer() const;
 private:
-    BaseInfo mRootTypeInfo;
+    std::string mRootTypeIdentifier;
     const NodeExpression* mRootTypeNode = nullptr;
 };
 

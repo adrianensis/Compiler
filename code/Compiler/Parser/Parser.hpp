@@ -3,7 +3,7 @@
 
 #include "Core/Module.hpp"
 #include "Compiler/Lexer/Lexer.hpp"
-#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
+#include "Compiler/AST/ScopeBuilder.hpp"
 
 class Registry;
 class Node;
@@ -12,9 +12,8 @@ class Parser
 {
 public:
     Parser() = default;
-    Parser(const std::string& inputString, Registry& registry) 
+    Parser(const std::string& inputString) 
     {
-        mRegistry = &registry;
         mInputString = inputString;
         mLexer = Lexer(mInputString.c_str());
     }
@@ -27,24 +26,14 @@ public:
 
     const std::string& getLine(u32 lineNumber) const;
 
-    Registry& getRegistry() const
-    {
-        return *mRegistry;
-    }
-
 public:
     public: std::string mPath;
 
 private:
     Lexer mLexer;
     std::string mInputString;
-    Registry* mRegistry = nullptr;
-    ScopeBuilder mScopeBuilder;
     std::vector<Token> mTokens;
     u32 mTokenIndex = 0;
-
-public:
-    RGET(ScopeBuilder)
 };
 
 #endif

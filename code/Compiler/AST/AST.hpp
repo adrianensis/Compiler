@@ -3,7 +3,7 @@
 
 #include "Core/Module.hpp"
 #include "Compiler/Parser/Parser.hpp"
-#include "Compiler/AST/Registry.hpp"
+#include "Compiler/AST/Context.hpp"
 
 class StatementModule;
 
@@ -23,7 +23,7 @@ private:
     std::vector<std::string> mFiles;
     std::vector<StatementModule*> mModules;
     std::vector<Parser*> mParsers;
-    Registry mRegistry;
+    Context mContext;
 };
 
 #endif

@@ -1,4 +1,13 @@
-stack class Vector2
+stack class Vector3
+{
+public:
+
+	f32 x = 0;
+	f32 y = 0;
+	f32 z = 0;
+};
+
+class Vector2
 {
 public:
 
@@ -17,17 +26,17 @@ public:
         this.y = y;
     }
 
-    Vector2(Vector2 other)
+    Vector2(const Vector2 other)
     {
         this.x = other.x;
         this.y = other.y;
     }
 
-    // Vector2(Vector3 other)
-    // {
-    //     this->x = other.x;
-    //     this->y = other.y;
-    // }
+    Vector2(const Vector3 other)
+    {
+        this.x = other.x;
+        this.y = other.y;
+    }
 
     // Vector2(Vector4 other)
     // {
@@ -42,7 +51,7 @@ public:
         return this;
     }
 
-    Vector2 set(Vector2 rhs)
+    Vector2 set(const Vector2 rhs)
     {
         this.set(rhs.x, rhs.y);
         return this;
@@ -60,28 +69,28 @@ public:
     //     return *this;
     // }
 
-    Vector2 add(Vector2 rhs)
+    Vector2 add(const Vector2 rhs)
     {
         x = x + rhs.x;
         y = y + rhs.y;
         return this;
     }
 
-    Vector2 sub(Vector2 rhs)
+    Vector2 sub(const Vector2 rhs)
     {
         x = x - rhs.x;
         y = y - rhs.y;
         return this;
     }
 
-    Vector2 mul(Vector2 rhs)
+    Vector2 mul(const Vector2 rhs)
     {
         x = x * rhs.x;
         y = y * rhs.y;
         return this;
     }
 
-    Vector2 div(Vector2 rhs)
+    Vector2 div(const Vector2 rhs)
     {
         // ASSERT_MSG(rhs.x != 0, "Division by zero.");
         // ASSERT_MSG(rhs.y != 0, "Division by zero.");
@@ -119,14 +128,9 @@ public:
         return this;
     }
 
-    f32 dot(Vector2 v) const
+    f32 dot(const Vector2 v) const
     {
-        return this.x * v.x + this.y * v.y;
-    }
-
-    f32 sqrlen() const
-    {
-        return this.dot(this);
+        return this.x * v.x + (this.y * v.y);
     }
 
     f32 sqrdst(Vector2 v) const
@@ -181,7 +185,7 @@ public:
     //     return this;
     // }
 
-    f32 angle(Vector2 v) const
+    f32 angle(const Vector2 v) const
     {
         f32 angle = atan2f(v.y, v.x) - atan2f(this.y, this.x);
         if(angle < 0)

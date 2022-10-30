@@ -21,6 +21,7 @@ public:
 
 public:
     CRGET(Scope)
+    CRGET(ScopeVector)
 };
 
 #endif

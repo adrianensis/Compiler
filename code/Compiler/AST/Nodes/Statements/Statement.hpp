@@ -7,7 +7,8 @@
 
 // ******* MODULE *******
 DECL_NODE(StatementModule)
-    public: std::string mPath;
+public:
+    std::string mPath;
 END_NODE()
 
 // ******* STATEMENT *******
@@ -57,6 +58,7 @@ DECL_NODE(StatementClassVisibility)
 END_NODE()
 
 DECL_NODE(StatementConstructorDefinition)
+    DECL_CHILD(StatementFunctionBaseDefinition, mStatementFunctionBaseDefinition);
 END_NODE()
 
 DECL_NODE(StatementMemberVariableDefinition)
@@ -78,7 +80,7 @@ DECL_NODE(StatementVariableDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
     DECL_CHILD(StatementExpression, mStatementExpression);
-    DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
+    DECL_CHILD(StatementTypeQualifierVariable, mStatementTypeQualifierVariable);
 END_NODE()
 
 DECL_NODE(StatementGlobalVariableDefinition)
@@ -93,6 +95,8 @@ DECL_NODE(StatementFunctionBaseDefinition)
     DECL_CHILD(StatementParametersList, mStatementParametersList);
     DECL_CHILD(StatementFunctionQualifier, mStatementFunctionQualifier);
     DECL_CHILD(StatementBlock, mStatementBody);
+public:
+    std::string mFunctionSignature;
 END_NODE()
 
 DECL_NODE(StatementFunctionDefinition)
@@ -109,7 +113,8 @@ END_NODE()
 DECL_NODE(StatementParameterDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
-    DECL_CHILD(StatementTypeQualifierParameter, mStatementTypeQualifierParameter);
+    DECL_CHILD(StatementTypeQualifierVariable, mStatementTypeQualifierVariable);
+    VariableInfo mParameterInfo;
 END_NODE()
 
 DECL_NODE(StatementParametersList)
@@ -125,14 +130,15 @@ END_NODE()
 
 // ******* EXPRESSION *******
 DECL_EXPRESSION_NODE(StatementExpression)
+    DECL_CODEGEN()
     DECL_CHILD(NodeExpression, mNodeExpression);
+    DECL_CHILD(NodeExpression, mNodeEnclosedExpression);
 END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionPrimary)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenExpression);
     DECL_CHILD(StatementExpressionInvocation, mStatementExpressionInvocation);
-    DECL_CHILD(StatementExpression, mStatementExpression);
 END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionUnary)
@@ -202,10 +208,11 @@ END_NODE()
 
 DECL_NODE(StatementTypeQualifier)
     DECL_CODEGEN()
+    DECL_TOKEN(mTokenTypeQualifier);
     DECL_CHILD(StatementType, mStatementType);
 END_NODE()
 
-DECL_NODE(StatementTypeQualifierParameter)
+DECL_NODE(StatementTypeQualifierVariable)
     DECL_CODEGEN()
     DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
 END_NODE()

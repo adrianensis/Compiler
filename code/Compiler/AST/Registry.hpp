@@ -13,12 +13,10 @@ enum class DataType {
 class BaseInfo
 {
 public:
-    Token mIdentifier;
-    Token mType;
-    std::string mScope = "";
+    std::string mIdentifier;
     std::string mPath = "";
 
-    virtual std::string getFullName() const { return mScope + mIdentifier.getLexeme(); }
+    virtual std::string getKey() const { return mIdentifier; }
 };
 
 class TypeInfo : public BaseInfo
@@ -28,14 +26,21 @@ public:
     bool mIsStack = false;
 };
 
-class VariableInfo : public BaseInfo
+class TypedDataInfo : public BaseInfo
+{
+public:
+    std::string mType;
+    bool mIsConst = false;
+};
+
+class VariableInfo : public TypedDataInfo
 {
 };
 
-class FunctionInfo : public BaseInfo
+class FunctionInfo : public TypedDataInfo
 {
 public:
-    std::string getFullName() const override { return mScope + mType.getLexeme() + mIdentifier.getLexeme(); }
+    bool mIsConstructor = false;
 };
 
 class Registry
@@ -52,27 +57,29 @@ public:
     template<class T>
     bool registerInfo(const T& info)
     {
+        const std::string key = info.getKey();
+
         if(getInfo(info))
         {
-            std::cout << "Duplicated " + info.mIdentifier.getLexeme() << std::endl;
+            std::cout << "Duplicated " + info.getKey() << std::endl;
         }
         else
         {
-            std::cout << "REGISTER " << typeid(T).name() << " " << info.getFullName() << std::endl;
+            std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
 
             if constexpr(std::is_same<T, TypeInfo>::value)
             {
-                MAP_INSERT(mTypesInfo, info.getFullName(), info);
+                MAP_INSERT(mTypesInfo, key, info);
                 return true;
             }
             else if constexpr(std::is_same<T, VariableInfo>::value)
             {
-                MAP_INSERT(mVariablesInfo, info.getFullName(), info);
+                MAP_INSERT(mVariablesInfo, key, info);
                 return true;
             }
             else if constexpr(std::is_same<T, FunctionInfo>::value)
             {
-                MAP_INSERT(mFunctionsInfo, info.getFullName(), info);
+                MAP_INSERT(mFunctionsInfo, key, info);
                 return true;
             }
             else
@@ -87,13 +94,32 @@ public:
     template<class T>
     const T* getInfo(const T& info) const
     {
-        std::string key = info.getFullName();
+        std::string key = info.getKey();
 
+        return getInfo<T>(key);
+    }
+    
+    template<class T>
+    const T* getInfo(const std::string& key) const
+    {
         if constexpr(std::is_same<T, TypeInfo>::value)
         {
             return MAP_CONTAINS(mTypesInfo, key) ? &mTypesInfo.at(key) : nullptr;
         }
-        else if constexpr(std::is_same<T, VariableInfo>::value)
+        else if constexpr(std::is_same<T, TypedDataInfo>::value)
+        {
+            const VariableInfo* variableInfo = getInfo<VariableInfo>(key);
+            const FunctionInfo* functionInfo = getInfo<FunctionInfo>(key);
+            if(variableInfo)
+            {
+                return variableInfo;
+            }
+            else
+            {
+                return functionInfo;
+            }
+        }
+        if constexpr(std::is_same<T, VariableInfo>::value)
         {
             return MAP_CONTAINS(mVariablesInfo, key) ? &mVariablesInfo.at(key) : nullptr;
         }

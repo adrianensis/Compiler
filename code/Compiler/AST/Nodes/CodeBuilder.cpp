@@ -1,5 +1,5 @@
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
-#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
+#include "Compiler/AST/Context.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
 #include "Compiler/Utils/CharUtils.hpp"
@@ -35,7 +35,10 @@ void CodeBuilder::addSpaces(u32 spaces)
 
 void CodeBuilder::addToken(const Token& token)
 {
-    addString(token.getLexeme());
+    if(!token.getIsNull())
+    {
+        addString(token.getLexeme());
+    }
 }
 
 void CodeBuilder::addTokenType(const TokenType& tokenType)
@@ -62,11 +65,11 @@ void CodeBuilder::unindent()
     }
 }
 
-void CodeBuilder::addScope(const ScopeBuilder& scopeBuilder)
+void CodeBuilder::addScope(const Context& context)
 {
-    if(scopeBuilder.hasScope())
+    if(context.hasScope())
     {
-        addString(scopeBuilder.getScope());
+        addString(context.getScope());
         addString("::");
     }
 }

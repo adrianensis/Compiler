@@ -1,16 +1,18 @@
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Parser/Parser.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
-#include "Compiler/AST/Nodes/ScopeBuilder.hpp"
+#include "Compiler/AST/ScopeBuilder.hpp"
+#include "Compiler/AST/Context.hpp"
 
 Node::~Node() 
 {
     DELETE_CONTENT(mChildren);
 }
 
-void Node::init(Parser* parser) 
+void Node::init(Parser* parser, Context* context) 
 {
     mParser = parser;
+    mContext = context;
 }
 
 bool Node::parse()
@@ -31,19 +33,14 @@ void Node::generateCodeChildren(CodeBuilder& builder) const
     }
 }
 
-Registry& Node::getRegistry() const
+Context& Node::getContext() const
 {
-    return mParser->getRegistry();
-}
-
-ScopeBuilder& Node::getScopeBuilder() const
-{
-    return mParser->getScopeBuilder();
+    return *mContext;
 }
 
 Node* Node::internalExpectNode(Node* node)
 {
-    node->init(mParser);
+    node->init(mParser, mContext);
     bool parseResult = false;
     parseResult = node->parse();
     //std::cout << std::boolalpha << typeid(*this).name() << " parse: " << parseResult << std::endl;
@@ -134,22 +131,18 @@ bool NodeExpression::isPointer() const
 {
     bool resultIsPointer = false;
 
-    BaseInfo info = getRootTypeInfo();
-    VariableInfo infoVariable;
-    infoVariable.mIdentifier = info.mIdentifier;
-    infoVariable.mScope = info.mScope;
-    if(getRegistry().getInfo(infoVariable))
+    const TypedDataInfo* typedDataInfo = getContext().findTypedData(getRootTypeIdentifier());
+    const TypeInfo* typeInfo = getContext().findTypeInfo(typedDataInfo->mType);
+    if(typeInfo)
     {
-        TypeInfo info;
-        info.mIdentifier = getRegistry().getInfo(infoVariable)->mType;
-        //infoClass.mScope = info.mScope;
-        if(getRegistry().getInfo(info))
+        if(!typeInfo->mIsStack)
         {
-            if(!getRegistry().getInfo(info)->mIsStack)
-            {
-                resultIsPointer = true;
-            }
+            resultIsPointer = true;
         }
+    }
+    else
+    {
+        logError("Variable " + getRootTypeIdentifier() + " not found!");
     }
 
     return resultIsPointer;
