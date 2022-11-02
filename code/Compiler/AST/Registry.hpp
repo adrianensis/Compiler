@@ -58,47 +58,57 @@ public:
     bool registerInfo(const T& info)
     {
         const std::string key = info.getKey();
+        bool registered = false;
 
-        if(getInfo(info))
+        if constexpr(std::is_same<T, TypeInfo>::value)
         {
-            std::cout << "Duplicated " + info.getKey() << std::endl;
-        }
-        else
-        {
-            std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
-
-            if constexpr(std::is_same<T, TypeInfo>::value)
+            if(getInfo<TypeInfo>(key))
             {
-                MAP_INSERT(mTypesInfo, key, info);
-                return true;
-            }
-            else if constexpr(std::is_same<T, VariableInfo>::value)
-            {
-                MAP_INSERT(mVariablesInfo, key, info);
-                return true;
-            }
-            else if constexpr(std::is_same<T, FunctionInfo>::value)
-            {
-                MAP_INSERT(mFunctionsInfo, key, info);
-                return true;
+                std::cout << "Duplicated " + info.getKey() << std::endl;
             }
             else
             {
-                ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
+                MAP_INSERT(mTypesInfo, key, info);
+                registered = true;
             }
         }
+        else if constexpr(std::is_same<T, VariableInfo>::value)
+        {
+            if(getInfo<VariableInfo>(key))
+            {
+                std::cout << "Duplicated " + info.getKey() << std::endl;
+            }
+            else
+            {
+                MAP_INSERT(mVariablesInfo, key, info);
+                registered = true;
+            }
+        }
+        else if constexpr(std::is_same<T, FunctionInfo>::value)
+        {
+            if(getInfo<FunctionInfo>(key))
+            {
+                std::cout << "Duplicated " + info.getKey() << std::endl;
+            }
+            else
+            {
+                MAP_INSERT(mFunctionsInfo, key, info);
+                registered = true;
+            }
+        }
+        else
+        {
+            ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
+        }
 
-        return false;
+        if(registered)
+        {
+            std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
+        }
+
+        return registered;
     }
 
-    template<class T>
-    const T* getInfo(const T& info) const
-    {
-        std::string key = info.getKey();
-
-        return getInfo<T>(key);
-    }
-    
     template<class T>
     const T* getInfo(const std::string& key) const
     {

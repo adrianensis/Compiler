@@ -271,25 +271,45 @@ IMPL_CODEGEN(StatementExpressionSimpleInvocation)
 
 IMPL_CODEGEN(StatementExpressionCompoundInvocation)
 {
+    bool isPointer = false;
+    const TypedDataInfo* typedDataInfo = nullptr;
+    typedDataInfo = getContext().findTypedData(mStatementExpressionSimpleInvocation->getRootTypeIdentifier());
+
+    if(mStatementScope)
+    {
+        mStatementScope->generateCode(builder);
+
+        ScopeBuilder scopeBuilder;
+        FOR_LIST(it, mStatementScope->mScopeVector)
+        {
+            scopeBuilder.pushScope(*it);
+        }
+
+        typedDataInfo = getContext().getRegistryFromScope(scopeBuilder.getScope()).getInfo<TypedDataInfo>(mStatementExpressionSimpleInvocation->getRootTypeIdentifier());
+    }
+
+    if(typedDataInfo)
+    {
+        const TypeInfo* typeInfo = getContext().findTypeInfo(typedDataInfo->mType);
+        if(typeInfo)
+        {
+            if(!typeInfo->mIsStack)
+            {
+                isPointer = true;
+            }
+        }
+    }
+
     mStatementExpressionSimpleInvocation->generateCode(builder);
     if(mStatementExpressionCompoundInvocation)
     {
-        if(mTokenAccessOperator.is(TokensDefinitions::Dot))
+        if(isPointer)
         {
-            bool isPointer = mStatementExpressionSimpleInvocation->isPointer();
-
-            if(isPointer)
-            {
-               builder.addTokenType(TokensDefinitions::Arrow);
-            }
-            else
-            {
-               builder.addTokenType(TokensDefinitions::Dot);
-            }
+            builder.addTokenType(TokensDefinitions::Arrow);
         }
         else
         {
-            builder.addToken(mTokenAccessOperator);
+            builder.addTokenType(TokensDefinitions::Dot);
         }
 
         mStatementExpressionCompoundInvocation->generateCode(builder);
@@ -353,6 +373,18 @@ IMPL_CODEGEN(StatementExpressionBinary)
     mStatementExpressionPrimary->generateCode(builder);
     mStatementBinaryOperator->generateCode(builder);
     mStatementExpression->generateCode(builder);
+}
+
+// ******* SCOPE *******
+IMPL_CODEGEN(StatementScope)
+{
+    builder.addToken(mTokenScope);
+    builder.addTokenType(TokensDefinitions::Scope);
+
+    if(mStatementScope)
+    {
+        mStatementScope->generateCode(builder);
+    }
 }
 
 // ******* OPERATORS *******

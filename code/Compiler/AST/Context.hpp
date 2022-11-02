@@ -32,6 +32,8 @@ public:
 private:
     void createRegistry(const std::string& string);
 
+public:
+    inline static const std::string smGlobalScope = "";
 private:
     ScopeBuilder mScopeBuilder;
     ScopeBuilder mClassScopeBuilder;

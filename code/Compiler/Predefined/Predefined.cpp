@@ -24,8 +24,12 @@ void Predefined::predefine()
     variableInfoFalse.mType = TokensDefinitions::Bool.getValue();
     mContext->getRegistry().registerInfo(variableInfoFalse);
     
+    mContext->pushScope("std");
+    
     FunctionInfo functionInfoAcos;
     functionInfoAcos.mIdentifier = "acosfloat";
     functionInfoAcos.mType = "float";
     mContext->getRegistry().registerInfo(functionInfoAcos);
+
+    mContext->popScope();
 }

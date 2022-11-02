@@ -5,7 +5,7 @@
 Context::Context()
 {
     // insert empty scope registry by default
-    createRegistry(std::string());
+    createRegistry(smGlobalScope);
 }
 
 Registry& Context::getRegistry()
@@ -20,7 +20,7 @@ Registry& Context::getRegistryFromScope(const std::string& string)
 
 Registry& Context::getRegistryGlobalScope()
 {
-    return mRegistryMap.at("");
+    return getRegistryFromScope(smGlobalScope);
 }
 
 ScopeBuilder Context::getScopeBuilderCopy() const
@@ -32,7 +32,7 @@ void Context::pushScope(const std::string& string)
 {
     mScopeBuilder.pushScope(string);
     
-    if(!MAP_CONTAINS(mRegistryMap, mScopeBuilder.getScope()))
+    if(! MAP_CONTAINS(mRegistryMap, mScopeBuilder.getScope()))
     {
         createRegistry(mScopeBuilder.getScope());
     }
@@ -93,15 +93,15 @@ std::string Context::findTypedDataTypeInfoIdentifier(const std::string& identifi
 {
     try
     {
-        i32 integerValue = std::stoi(identifier);
-        return "int";
+        f32 floatValue = std::stof(identifier);
+        return "float";
     }
     catch(std::exception& e)
     {
         try
         {
-            f32 floatValue = std::stof(identifier);
-            return "float";
+            i32 integerValue = std::stoi(identifier);
+            return "int";
         }
         catch(std::exception& e)
         {
@@ -122,25 +122,22 @@ const TypedDataInfo* Context::findTypedData(const std::string& identifier)
 
     std::string currentScope = scopeBuilder.getScope();
 
-    TypedDataInfo typedDataInfo;
-    typedDataInfo.mIdentifier = identifier;
-
     // check first scope
-    bool found = getRegistryFromScope(currentScope).getInfo(typedDataInfo);
+    bool found = getRegistryFromScope(currentScope).getInfo<TypedDataInfo>(identifier);
 
     scopeBuilder.popScope();
 
     while(!found && scopeBuilder.hasScope())
     {
         currentScope = scopeBuilder.getScope();
-        found = getRegistryFromScope(currentScope).getInfo(typedDataInfo);
+        found = getRegistryFromScope(currentScope).getInfo<TypedDataInfo>(identifier);
         scopeBuilder.popScope();
     }
 
     if(!found)
     {
         // check last scope
-        found = getRegistryFromScope(scopeBuilder.getScope()).getInfo(typedDataInfo);
+        found = getRegistryFromScope(scopeBuilder.getScope()).getInfo<TypedDataInfo>(identifier);
         if(found)
         {
             currentScope = scopeBuilder.getScope();
@@ -149,7 +146,7 @@ const TypedDataInfo* Context::findTypedData(const std::string& identifier)
 
     if(found)
     {
-        return getRegistryFromScope(currentScope).getInfo(typedDataInfo);
+        return getRegistryFromScope(currentScope).getInfo<TypedDataInfo>(identifier);
     }
     
     return nullptr;
@@ -161,11 +158,8 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
 
     std::string currentScope = scopeBuilder.getScope();
 
-    TypeInfo typeInfo;
-    typeInfo.mIdentifier = typeIdentifier;
-
     // check first scope
-    bool found = getRegistryFromScope(currentScope).getInfo(typeInfo);
+    bool found = getRegistryFromScope(currentScope).getInfo<TypeInfo>(typeIdentifier);
 
     if(!found)
     {
@@ -180,7 +174,7 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
         while(!found && scopeBuilder.hasScope())
         {
             currentScope = scopeBuilder.getScope();
-            found = getRegistryFromScope(currentScope).getInfo(typeInfo);
+            found = getRegistryFromScope(currentScope).getInfo<TypeInfo>(typeIdentifier);
             scopeBuilder.popScope();
         }
     }
@@ -188,7 +182,7 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
     if(!found)
     {
         // check last scope
-        found = getRegistryFromScope(scopeBuilder.getScope()).getInfo(typeInfo);
+        found = getRegistryFromScope(scopeBuilder.getScope()).getInfo<TypeInfo>(typeIdentifier);
         if(found)
         {
             currentScope = scopeBuilder.getScope();
@@ -197,7 +191,7 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
 
     if(found)
     {
-        return getRegistryFromScope(currentScope).getInfo(typeInfo);
+        return getRegistryFromScope(currentScope).getInfo<TypeInfo>(typeIdentifier);
     }
     
     std::cout << "Undefined Type: " << typeIdentifier << std::endl;

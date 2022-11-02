@@ -487,9 +487,14 @@ IMPL_PARSE(StatementExpressionSimpleInvocation)
 
 IMPL_PARSE(StatementExpressionCompoundInvocation)
 {
+    if(mStatementScope = expectNode<StatementScope>())
+    {
+        // ok
+    }
+
     if(mStatementExpressionSimpleInvocation = expectNode<StatementExpressionSimpleInvocation>())
     {
-        if(expectToken(TokensDefinitions::Dot, &mTokenAccessOperator) || expectToken(TokensDefinitions::Scope, &mTokenAccessOperator))
+        if(expectToken(TokensDefinitions::Dot))
         {
             if(mStatementExpressionCompoundInvocation = expectNode<StatementExpressionCompoundInvocation>())
             {
@@ -540,6 +545,27 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
 IMPL_PARSE(StatementExpressionFunctionParametersList)
 {
     if(expectNodeListEnclosed<StatementExpression>(TokensDefinitions::Comma, TokensDefinitions::LeftParen, TokensDefinitions::RightParen)) { return true; }
+    return false;
+}
+
+// ******* SCOPE *******
+IMPL_PARSE(StatementScope)
+{
+    if(expectToken(TokensDefinitions::Identifier, &mTokenScope))
+    {
+        if(expectToken(TokensDefinitions::Scope))
+        {
+            mScopeVector.push_back(mTokenScope.getLexeme());
+            if(mStatementScope = expectNode<StatementScope>())
+            {
+                mScopeVector.insert(mScopeVector.end(), mStatementScope->mScopeVector.begin(), mStatementScope->mScopeVector.end());
+                return true;
+            }
+
+            return true;
+        }
+    }
+
     return false;
 }
 

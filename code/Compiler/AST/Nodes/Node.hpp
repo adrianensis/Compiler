@@ -150,7 +150,6 @@ public:
     virtual const std::string& getRootTypeIdentifier() const { return mRootTypeNode ? mRootTypeNode->getRootTypeIdentifier() : mRootTypeIdentifier; }
     void setRootTypeIdentifier(const std::string& identifier) { mRootTypeIdentifier = identifier; }
     void setRootTypeNode(const NodeExpression* nodeExpression) { mRootTypeNode = nodeExpression; }
-    bool isPointer() const;
 private:
     std::string mRootTypeIdentifier;
     const NodeExpression* mRootTypeNode = nullptr;

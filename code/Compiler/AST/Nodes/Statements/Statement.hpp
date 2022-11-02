@@ -170,8 +170,8 @@ END_NODE()
 DECL_EXPRESSION_NODE(StatementExpressionCompoundInvocation)
     DECL_CODEGEN()
     DECL_CHILD(StatementExpressionSimpleInvocation, mStatementExpressionSimpleInvocation);
-    DECL_TOKEN(mTokenAccessOperator);
     DECL_CHILD(StatementExpressionCompoundInvocation, mStatementExpressionCompoundInvocation);
+    DECL_CHILD(StatementScope, mStatementScope);
 END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionVariableInvocation)
@@ -187,6 +187,15 @@ END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionFunctionParametersList)
     DECL_CODEGEN()
+END_NODE()
+
+// ******* SCOPE *******
+DECL_NODE(StatementScope)
+    DECL_CODEGEN()
+    DECL_TOKEN(mTokenScope);
+    DECL_CHILD(StatementScope, mStatementScope);
+public:
+    std::vector<std::string> mScopeVector;
 END_NODE()
 
 // ******* OPERATORS *******

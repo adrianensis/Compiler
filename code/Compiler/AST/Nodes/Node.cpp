@@ -126,23 +126,3 @@ void Node::logError(const std::string& error) const
     }
     std::cout << "ERROR: " << error << std::endl;
 }
-
-bool NodeExpression::isPointer() const
-{
-    bool resultIsPointer = false;
-
-    const TypeInfo* typeInfo = getContext().findTypedDataTypeInfo(getRootTypeIdentifier());
-    if(typeInfo)
-    {
-        if(!typeInfo->mIsStack)
-        {
-            resultIsPointer = true;
-        }
-    }
-    else
-    {
-        logError("Type " + typeInfo->mIdentifier + " not found!");
-    }
-
-    return resultIsPointer;
-}

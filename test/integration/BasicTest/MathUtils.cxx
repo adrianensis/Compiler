@@ -3,7 +3,7 @@ class MathUtils
     public:
         f32 FLOAT_EPSILON = 0.0000001;
 
-        f32 PI = std::acos(-1.0);
+        const f32 PI = std::acos(-1.0);
         f32 PI_2 = PI / 2.0;
         f32 PI_4 = PI / 4.0;
         f32 INV_PI = 1.0 / PI;
