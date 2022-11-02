@@ -11,6 +11,7 @@ public:
     Context();
     Registry& getRegistry();
     Registry& getRegistryFromScope(const std::string& string);
+    Registry& getRegistryGlobalScope();
 
     ScopeBuilder getScopeBuilderCopy() const;
 
@@ -24,6 +25,8 @@ public:
     const std::string& getCurrentClass() const;
 
     const TypedDataInfo* findTypedData(const std::string& identifier);
+    const TypeInfo* findTypedDataTypeInfo(const std::string& identifier);
+    std::string findTypedDataTypeInfoIdentifier(const std::string& identifier);
     const TypeInfo* findTypeInfo(const std::string& typeIdentifier);
 
 private:

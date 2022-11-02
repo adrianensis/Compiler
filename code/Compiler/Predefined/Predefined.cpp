@@ -14,6 +14,16 @@ void Predefined::predefine()
     typeInfoInt.mDataType = DataType::TYPE_PRIMITIVE;
     mContext->getRegistry().registerInfo(typeInfoInt);
     
+    VariableInfo variableInfoTrue;
+    variableInfoTrue.mIdentifier = TokensDefinitions::True.getValue();
+    variableInfoTrue.mType = TokensDefinitions::Bool.getValue();
+    mContext->getRegistry().registerInfo(variableInfoTrue);
+    
+    VariableInfo variableInfoFalse;
+    variableInfoFalse.mIdentifier = TokensDefinitions::False.getValue();
+    variableInfoFalse.mType = TokensDefinitions::Bool.getValue();
+    mContext->getRegistry().registerInfo(variableInfoFalse);
+    
     FunctionInfo functionInfoAcos;
     functionInfoAcos.mIdentifier = "acosfloat";
     functionInfoAcos.mType = "float";

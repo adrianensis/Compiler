@@ -18,6 +18,11 @@ Registry& Context::getRegistryFromScope(const std::string& string)
     return mRegistryMap.at(string);
 }
 
+Registry& Context::getRegistryGlobalScope()
+{
+    return mRegistryMap.at("");
+}
+
 ScopeBuilder Context::getScopeBuilderCopy() const
 {
     return mScopeBuilder;
@@ -77,6 +82,38 @@ const std::string& Context::getCurrentClass() const
     }
 
     return mClassScopeBuilder.getScopeVector().back();
+}
+
+const TypeInfo* Context::findTypedDataTypeInfo(const std::string& identifier)
+{
+    return findTypeInfo(findTypedDataTypeInfoIdentifier(identifier));
+}
+
+std::string Context::findTypedDataTypeInfoIdentifier(const std::string& identifier)
+{
+    try
+    {
+        i32 integerValue = std::stoi(identifier);
+        return "int";
+    }
+    catch(std::exception& e)
+    {
+        try
+        {
+            f32 floatValue = std::stof(identifier);
+            return "float";
+        }
+        catch(std::exception& e)
+        {
+            const TypedDataInfo* typedDataInfo = findTypedData(identifier);
+            if(typedDataInfo)
+            {
+                return typedDataInfo->mType;
+            }
+        }
+    }
+
+    return std::string();
 }
 
 const TypedDataInfo* Context::findTypedData(const std::string& identifier)

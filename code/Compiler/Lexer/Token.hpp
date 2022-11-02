@@ -122,6 +122,7 @@ public:
     DECLARE_TOKEN_PRIMITIVE(Void, "void");
     DECLARE_TOKEN_PRIMITIVE(Long, "long");
     DECLARE_TOKEN_PRIMITIVE(Short, "short");
+    DECLARE_TOKEN_PRIMITIVE(Bool, "bool");
 
     // keywords
     DECLARE_TOKEN_KEYWORD(Using, "using");

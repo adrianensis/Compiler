@@ -242,8 +242,7 @@ IMPL_CODEGEN(StatementExpressionInvocation)
         }
         else
         {
-            const TypedDataInfo* typedDataInfo = getContext().findTypedData(getRootTypeIdentifier());
-            const TypeInfo* info = getContext().findTypeInfo(typedDataInfo->mType);
+            const TypeInfo* info = getContext().findTypedDataTypeInfo(getRootTypeIdentifier());
             if(info)
             {
                 if(info->mIsStack)

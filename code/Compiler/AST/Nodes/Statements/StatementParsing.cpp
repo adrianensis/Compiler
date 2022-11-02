@@ -423,17 +423,17 @@ IMPL_PARSE(StatementExpressionPrimary)
 {
     if(expectToken(TokensDefinitions::Number, &mTokenExpression))
     {
-        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        setRootTypeIdentifier(mTokenExpression.getLexeme());
         return true;
     }
     if(expectToken(TokensDefinitions::True, &mTokenExpression))
     {
-        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        setRootTypeIdentifier(mTokenExpression.getLexeme());
         return true;
     }
     if(expectToken(TokensDefinitions::False, &mTokenExpression))
     {
-        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        setRootTypeIdentifier(mTokenExpression.getLexeme());
         return true;
     }
     if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>())
@@ -526,8 +526,8 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
             FOR_LIST(it, mStatementExpressionFunctionParametersList->getChildren())
             {
                 const StatementExpression* paramExpression = dynamic_cast<StatementExpression*>(*it);
-                const TypedDataInfo* typedDataInfo = getContext().findTypedData(paramExpression->getRootTypeIdentifier());
-                functionSignature += typedDataInfo->mType;
+                const std::string typeIdentifier = getContext().findTypedDataTypeInfoIdentifier(paramExpression->getRootTypeIdentifier());
+                functionSignature += typeIdentifier;
             }
             setRootTypeIdentifier(functionSignature);
             return true;

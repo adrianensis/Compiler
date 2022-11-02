@@ -131,25 +131,17 @@ bool NodeExpression::isPointer() const
 {
     bool resultIsPointer = false;
 
-    const TypedDataInfo* typedDataInfo = getContext().findTypedData(getRootTypeIdentifier());
-    if(typedDataInfo)
+    const TypeInfo* typeInfo = getContext().findTypedDataTypeInfo(getRootTypeIdentifier());
+    if(typeInfo)
     {
-        const TypeInfo* typeInfo = getContext().findTypeInfo(typedDataInfo->mType);
-        if(typeInfo)
+        if(!typeInfo->mIsStack)
         {
-            if(!typeInfo->mIsStack)
-            {
-                resultIsPointer = true;
-            }
-        }
-        else
-        {
-            logError("Type " + typedDataInfo->mType + " not found!");
+            resultIsPointer = true;
         }
     }
     else
     {
-        logError("Variable " + getRootTypeIdentifier() + " not found!");
+        logError("Type " + typeInfo->mIdentifier + " not found!");
     }
 
     return resultIsPointer;
