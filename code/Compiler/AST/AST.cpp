@@ -1,6 +1,7 @@
 #include "Compiler/AST/AST.hpp"
 #include "Compiler/AST/Nodes/Statements/Statement.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
+#include "Compiler/Predefined/Predefined.hpp"
 
 AST::~AST() 
 {
@@ -15,11 +16,9 @@ void AST::addFile(const std::string& path)
 
 void AST::generateCode()
 {
-    // PREDEFINED TYPES
-    TypeInfo typeInfo;
-    typeInfo.mIdentifier = TokensDefinitions::Float.getValue();
-    typeInfo.mDataType = DataType::TYPE_PRIMITIVE;
-    mContext.getRegistry().registerInfo(typeInfo);
+    // PREDEFINE STUFF
+    Predefined predefined(&mContext);
+    predefined.predefine();
 
     FOR_LIST(it, mFiles)
     {

@@ -387,6 +387,7 @@ IMPL_PARSE(StatementExpressionUnary)
     {
         if(mStatementExpressionPrimary = expectNode<StatementExpressionPrimary>())
         {
+            setRootTypeNode(mStatementExpressionPrimary);
             return true;
         }
     }
@@ -394,6 +395,7 @@ IMPL_PARSE(StatementExpressionUnary)
     {
         if(mStatementUnaryOperatorPost = expectNode<StatementUnaryOperator>())
         {
+            setRootTypeNode(mStatementExpressionPrimary);
             return true;
         }
     }
@@ -419,9 +421,21 @@ IMPL_PARSE(StatementExpressionBinary)
 
 IMPL_PARSE(StatementExpressionPrimary)
 {
-    if(expectToken(TokensDefinitions::Number, &mTokenExpression)) { return true; }
-    if(expectToken(TokensDefinitions::True, &mTokenExpression)) { return true; }
-    if(expectToken(TokensDefinitions::False, &mTokenExpression)) { return true; }
+    if(expectToken(TokensDefinitions::Number, &mTokenExpression))
+    {
+        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        return true;
+    }
+    if(expectToken(TokensDefinitions::True, &mTokenExpression))
+    {
+        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        return true;
+    }
+    if(expectToken(TokensDefinitions::False, &mTokenExpression))
+    {
+        //setRootTypeIdentifier(mTokenExpression.getLexeme());
+        return true;
+    }
     if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>())
     {
         setRootTypeNode(mStatementExpressionInvocation);

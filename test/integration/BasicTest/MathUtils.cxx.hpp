@@ -3,7 +3,7 @@
 #include "test/integration/BasicTest/BasicTypes.cxx.hpp"
 class MathUtils{
     public:
-    f32 PI=3.14;
+    f32 FLOAT_EPSILON=0.0000001;
 
 };
 #endif // MathUtils.cxx
