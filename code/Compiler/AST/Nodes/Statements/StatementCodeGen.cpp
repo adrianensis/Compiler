@@ -43,12 +43,15 @@ IMPL_CODEGEN(StatementBranch)
 
 IMPL_CODEGEN(StatementTypeAlias)
 {
-    builder.addTokenType(TokensDefinitions::Using);
-    builder.addToken(mTokenIdentifier);
-    builder.addTokenType(TokensDefinitions::Equal);
-    mStatementType->generateCode(builder);
-    builder.addTokenType(TokensDefinitions::Semicolon); 
-    builder.newLine();
+    if(builder.mGenerateHeaderCode)
+    {
+        builder.addTokenType(TokensDefinitions::Using);
+        builder.addToken(mTokenIdentifier);
+        builder.addTokenType(TokensDefinitions::Equal);
+        mStatementType->generateCode(builder);
+        builder.addTokenType(TokensDefinitions::Semicolon); 
+        builder.newLine();
+    }
 }
 
 // ******* CLASS DEFINITION *******
@@ -75,7 +78,7 @@ IMPL_CODEGEN(StatementClassDefinition)
     else
     {
         const TypeInfo* info = getContext().findTypeInfo(mTokenIdentifier.getLexeme());
-        if(info)
+        if(info && !info->mPath.empty())
         {
             builder.includeInSource(info->mPath);
         }
@@ -368,12 +371,29 @@ IMPL_CODEGEN(StatementBinaryOperator)
 IMPL_CODEGEN(StatementType)
 {
     builder.addToken(mTokenType);
-    
+
     const TypeInfo* info = getContext().findTypeInfo(mTokenType.getLexeme());
-    if(info)
+    bool includeHeader = true;
+    if(builder.mGenerateHeaderCode)
     {
-        builder.includeInHeader(info->mPath);
+        if(info && info->mDataType == DataType::TYPE_CLASS)
+        {
+            includeHeader = false;
+        }
     }
+
+    if(info && !info->mPath.empty())
+    {
+        if(includeHeader)
+        {
+            builder.includeInHeader(info->mPath);
+        }
+        else
+        {
+            builder.forwardInHeader(info->mIdentifier);
+        }
+    }
+    
 }
 
 IMPL_CODEGEN(StatementTypeQualifier)

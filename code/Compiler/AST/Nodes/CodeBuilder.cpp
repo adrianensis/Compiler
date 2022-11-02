@@ -76,12 +76,34 @@ void CodeBuilder::addScope(const Context& context)
 
 void CodeBuilder::includeInHeader(const std::string& string)
 {
-    mHeaderIncludes.push_back(string);
+    if (std::find(mHeaderIncludes.begin(), mHeaderIncludes.end(), string) == mHeaderIncludes.end())
+    {
+        mHeaderIncludes.push_back(string);
+    }
 }
 
 void CodeBuilder::includeInSource(const std::string& string)
 {
-    mSourceIncludes.push_back(string);
+    if (std::find(mSourceIncludes.begin(), mSourceIncludes.end(), string) == mSourceIncludes.end())
+    {
+        mSourceIncludes.push_back(string);
+    }
+}
+
+void CodeBuilder::forwardInHeader(const std::string& string)
+{
+    if (std::find(mHeaderForwards.begin(), mHeaderForwards.end(), string) == mHeaderForwards.end())
+    {
+        mHeaderForwards.push_back(string);
+    }
+}
+
+void CodeBuilder::forwardInSource(const std::string& string)
+{
+    if (std::find(mSourceForwards.begin(), mSourceForwards.end(), string) == mSourceForwards.end())
+    {
+        mSourceForwards.push_back(string);
+    }
 }
 
 const std::string& CodeBuilder::generateCode()
@@ -101,12 +123,22 @@ const std::string& CodeBuilder::generateCode()
         {
             finalCode += "#include \"" + (*it) + ".hpp\"\n";
         }
+        
+        FOR_LIST(it, mHeaderForwards)
+        {
+            finalCode += "class " + (*it) + ";\n";
+        }
     }
     else
     {
         FOR_LIST(it, mSourceIncludes)
         {
             finalCode += "#include \"" + (*it) + ".hpp\"\n";
+        }
+
+        FOR_LIST(it, mSourceForwards)
+        {
+            finalCode += "class " + (*it) + ";\n";
         }
     }
 

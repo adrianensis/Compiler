@@ -25,6 +25,8 @@ public:
     
     void includeInHeader(const std::string& string);
     void includeInSource(const std::string& string);
+    void forwardInHeader(const std::string& string);
+    void forwardInSource(const std::string& string);
 
     bool mGenerateHeaderCode = false;
 
@@ -40,6 +42,8 @@ private:
     bool mIsNewLine = true;
     std::vector<std::string> mHeaderIncludes;
     std::vector<std::string> mSourceIncludes;
+    std::vector<std::string> mHeaderForwards;
+    std::vector<std::string> mSourceForwards;
 
 public:
     SET(FileName)

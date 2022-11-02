@@ -7,7 +7,7 @@ public:
 	f32 z = 0;
 };
 
-class Vector2
+stack class Vector2
 {
 public:
 
@@ -57,11 +57,11 @@ public:
         return this;
     }
 
-    // Vector2& set(const Vector3& rhs)
-    // {
-    //     this->set(rhs.x, rhs.y);
-    //     return *this;
-    // }
+    Vector2 set(const Vector3 rhs)
+    {
+        this.set(rhs.x, rhs.y);
+        return this;
+    }
 
     // Vector2& set(const Vector4& rhs)
     // {
@@ -133,6 +133,11 @@ public:
         return this.x * v.x + (this.y * v.y);
     }
 
+    f32 sqrlen() const
+    {
+        return this.dot(this);
+    }
+
     f32 sqrdst(Vector2 v) const
     {
         Vector2 sub = Vector2(v).sub(this);
@@ -141,7 +146,7 @@ public:
 
     f32 len() const
     {
-        return sqrtf(this.sqrlen());
+        return std::sqrt(this.sqrlen());
     }
 
     f32 max() const
@@ -187,7 +192,7 @@ public:
 
     f32 angle(const Vector2 v) const
     {
-        f32 angle = atan2f(v.y, v.x) - atan2f(this.y, this.x);
+        f32 angle = std::atan2(v.y, v.x) - std::atan2(this.y, this.x);
         if(angle < 0)
         {
             angle += 2 * MathUtils::PI;

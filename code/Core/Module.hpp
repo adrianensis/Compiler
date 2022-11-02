@@ -3,7 +3,7 @@
 
 #include "Core/BasicTypes.hpp"
 #include "Core/Pointers.hpp"
-#include "Core/Maths/Module.hpp"
+#include "Core/Maths/MathUtils.hpp"
 #include "Core/Serialization.hpp"
 #include "Core/ObjectBase.hpp"
 #include "Core/Singleton.hpp"

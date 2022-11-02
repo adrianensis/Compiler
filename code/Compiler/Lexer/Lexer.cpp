@@ -136,6 +136,13 @@ Token Lexer::processNumber()
     const char* start = mInputStream;
     advance();
     skipDigits();
+    char currentChar = getCurrentChar();
+    if(TokensDefinitions::Dot.matchString(currentChar))
+    {
+        advance();
+        skipDigits();
+    }
+
     return Token(TokensDefinitions::Number, start, mInputStream, mLineNumber);
 }
 

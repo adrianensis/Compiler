@@ -90,6 +90,8 @@ IMPL_PARSE(StatementTypeAlias)
                 {
                     TypeInfo infoType;
                     infoType.mIdentifier = mTokenIdentifier.getLexeme();
+                    // TODO
+                    //infoType.mDataType = same as original
                     infoType.mPath = getParser()->mPath;
                     getContext().getRegistry().registerInfo(infoType);
 

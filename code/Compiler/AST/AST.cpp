@@ -15,6 +15,12 @@ void AST::addFile(const std::string& path)
 
 void AST::generateCode()
 {
+    // PREDEFINED TYPES
+    TypeInfo typeInfo;
+    typeInfo.mIdentifier = TokensDefinitions::Float.getValue();
+    typeInfo.mDataType = DataType::TYPE_PRIMITIVE;
+    mContext.getRegistry().registerInfo(typeInfo);
+
     FOR_LIST(it, mFiles)
     {
         std::ifstream file;
