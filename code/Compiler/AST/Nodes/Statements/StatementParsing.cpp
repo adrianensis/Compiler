@@ -329,6 +329,19 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
 {
     if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
     {
+        // Operator overload
+        if(StatementBinaryOperator* statementBinaryOperator = expectNode<StatementBinaryOperator>())
+        {
+            mTokenOperatorOverload = statementBinaryOperator->mTokenOperator;
+        }
+        else
+        {
+            if(StatementUnaryOperator* statementUnaryOperator = expectNode<StatementUnaryOperator>())
+            {
+                mTokenOperatorOverload = statementUnaryOperator->mTokenOperator;
+            }
+        }
+        
         if(mStatementParametersList = expectNode<StatementParametersList>())
         {
             if(mStatementFunctionQualifier = expectNode<StatementFunctionQualifier>())
@@ -337,7 +350,16 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
             }
 
             // Generate function signature
-            mFunctionSignature.push(mTokenIdentifier.getLexeme());
+
+            if(mTokenOperatorOverload.getIsNull())
+            {
+                mFunctionSignature.push(mTokenIdentifier.getLexeme());
+            }
+            else
+            {
+                mFunctionSignature.push(mTokenIdentifier.getLexeme() + mTokenOperatorOverload.getLexeme());
+            }
+
             FOR_LIST(it, mStatementParametersList->getChildren())
             {
                 const StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(*it);
@@ -427,14 +449,14 @@ IMPL_PARSE(StatementExpression)
         setRootTypeNode(mNodeExpression);
         return true;
     }
-    if(mNodeEnclosedExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
-    {
-        setRootTypeNode(mNodeEnclosedExpression);
-        return true;
-    }
     if(mNodeExpression = expectNode<StatementExpressionPrimary>())
     {
         setRootTypeNode(mNodeExpression);
+        return true;
+    }
+    if(mNodeEnclosedExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
+    {
+        setRootTypeNode(mNodeEnclosedExpression);
         return true;
     }
     return false;
@@ -498,6 +520,11 @@ IMPL_PARSE(StatementExpressionPrimary)
     if(mStatementExpressionInvocation = expectNode<StatementExpressionInvocation>())
     {
         setRootTypeNode(mStatementExpressionInvocation);
+        return true;
+    }
+    if(mStatementEnclosedExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
+    {
+        setRootTypeNode(mStatementEnclosedExpression);
         return true;
     }
     return false;
@@ -638,6 +665,7 @@ IMPL_PARSE(StatementUnaryOperator)
     if(expectToken(TokensDefinitions::Minus, &mTokenOperator)) { return true; }
     if(expectToken(TokensDefinitions::Exclamation, &mTokenOperator)) { return true; }
     if(expectToken(TokensDefinitions::Tilde, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::Equal, &mTokenOperator)) { return true; }
     return false;
 }
 
@@ -647,6 +675,8 @@ IMPL_PARSE(StatementBinaryOperator)
     if(expectToken(TokensDefinitions::Asterisk, &mTokenOperator)) { return true; }
     if(expectToken(TokensDefinitions::Slash, &mTokenOperator)) { return true; }
     if(expectToken(TokensDefinitions::Percent, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::MulEqual, &mTokenOperator)) { return true; }
+    if(expectToken(TokensDefinitions::DivEqual, &mTokenOperator)) { return true; }
     // additive
     if(expectToken(TokensDefinitions::Plus, &mTokenOperator)) { return true; }
     if(expectToken(TokensDefinitions::Minus, &mTokenOperator)) { return true; }
@@ -675,6 +705,7 @@ IMPL_PARSE(StatementType)
 {
     if(expectToken(TokensDefinitions::Int, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Float, &mTokenType)) { return true; }
+    if(expectToken(TokensDefinitions::Bool, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Void, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Identifier, &mTokenType)) { return true; }
     return false;

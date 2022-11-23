@@ -44,8 +44,8 @@ public:
 
     // Vector2(Vector4 other)
     // {
-    //     this->x = other.x;
-    //     this->y = other.y;
+    //     this.x = other.x;
+    //     this.y = other.y;
     // }
 
     Vector2 set(f32 x, f32 y)
@@ -69,7 +69,7 @@ public:
 
     // Vector2& set(const Vector4& rhs)
     // {
-    //     this->set(rhs.x, rhs.y);
+    //     this.set(rhs.x, rhs.y);
     //     return *this;
     // }
 
@@ -142,7 +142,7 @@ public:
         return this.dot(this);
     }
 
-    f32 sqrdst(Vector2 v) const
+    f32 sqrdst(const Vector2 v) const
     {
         Vector2 sub = Vector2(v).sub(this);
         return sub.dot(sub);
@@ -173,26 +173,26 @@ public:
         return this;
     }
 
-    // f32 dst(Vector2 v) const
-    // {
-    //     return sqrtf(this.sqrdst(v));
-    // }
+    f32 dst(const Vector2 v) const
+    {
+        return sqrtf(this.sqrdst(v));
+    }
 
-    // bool eq(Vector2 v) const
-    // {
-    //     return MathUtils::eqf(this.x, v.x) && MathUtils::eqf(this.y, v.y);
-    // }
+    bool eq(const Vector2 v) const
+    {
+        return MathUtils::eqf(this.x, v.x) && MathUtils::eqf(this.y, v.y);
+    }
 
-    // bool eq(Vector2 v, f32 e) const
-    // {
-    //     return MathUtils::eqf(this.x, v.x, e) && MathUtils::eqf(this.y, v.y, e);
-    // }
+    bool eq(const Vector2 v, f32 e) const
+    {
+        return MathUtils::eqf(this.x, v.x, e) && MathUtils::eqf(this.y, v.y, e);
+    }
 
-    // Vector2 lerp(Vector2 target, f32 t)
-    // {
-    //     (this) += Vector2(target).sub(this).mul(t);
-    //     return this;
-    // }
+    Vector2 lerp(const Vector2 target, f32 t)
+    {
+        (this) += Vector2(target).sub(this).mul(t);
+        return this;
+    }
 
     f32 angle(const Vector2 v) const
     {
@@ -216,4 +216,28 @@ public:
 
         return this;
     }
+
+    Vector2 operator=(const Vector2 other){ return set(other); }
+    
+    Vector2 operator+=(const Vector2 rhs) {return this.add(rhs); }
+    Vector2 operator-=(const Vector2 rhs) {return this.sub(rhs); }
+    Vector2 operator*=(const Vector2 rhs) {return this.mul(rhs); }
+    Vector2 operator/=(const Vector2 rhs) {return this.div(rhs); }
+    Vector2 operator+=(f32 rhs) {return this.add(rhs); }
+    Vector2 operator-=(f32 rhs) {return this.sub(rhs); }
+    Vector2 operator*=(f32 rhs) {return this.mul(rhs); }
+    Vector2 operator/=(f32 rhs) {return this.div(rhs); }
+
+    bool operator==(const Vector2 rhs) const {return this.eq(rhs); }
+    bool operator!=(const Vector2 rhs) const {return !((this) == rhs); }
+
+    Vector2 operator+(const Vector2 rhs) const {return Vector2(this) += rhs; }
+    Vector2 operator-(const Vector2 rhs) const {return Vector2(this) -= rhs; }
+    Vector2 operator*(const Vector2 rhs) const {return Vector2(this) *= rhs; }
+    Vector2 operator/(const Vector2 rhs) const {return Vector2(this) /= rhs; }
+    Vector2 operator+(f32 rhs) const {return Vector2(this) += rhs; }
+    Vector2 operator-(f32 rhs) const {return Vector2(this) -= rhs; }
+    Vector2 operator-() const{ return Vector2(this) *= -1; }
+    Vector2 operator*(f32 rhs) const {return Vector2(this) *= rhs; }
+    Vector2 operator/(f32 rhs) const {return Vector2(this) /= rhs; }
 };

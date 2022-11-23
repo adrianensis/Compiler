@@ -144,6 +144,7 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
     }
 
     builder.addToken(mTokenIdentifier);
+    builder.addToken(mTokenOperatorOverload);
     
     getContext().pushScope(mFunctionSignature.getSignature());
     builder.addTokenType(TokensDefinitions::LeftParen);
@@ -343,7 +344,16 @@ IMPL_CODEGEN(StatementExpressionPrimary)
 {
     if(mTokenExpression.getIsNull())
     {
-        mStatementExpressionInvocation->generateCode(builder);
+        if(mStatementExpressionInvocation)
+        {
+            mStatementExpressionInvocation->generateCode(builder);
+        }
+        else if(mStatementEnclosedExpression)
+        {
+            builder.addTokenType(TokensDefinitions::LeftParen);
+            mStatementEnclosedExpression->generateCode(builder);
+            builder.addTokenType(TokensDefinitions::RightParen);
+        }
     }
     else
     {
@@ -443,10 +453,13 @@ IMPL_CODEGEN(StatementType)
 
 IMPL_CODEGEN(StatementTypeQualifier)
 {
-    if( ! mTokenTypeStaticQualifier.getIsNull())
+    if(builder.mGenerateHeaderCode)
     {
-        builder.addTokenType(TokensDefinitions::Inline);
-        builder.addToken(mTokenTypeStaticQualifier);
+        if( ! mTokenTypeStaticQualifier.getIsNull())
+        {
+            builder.addTokenType(TokensDefinitions::Inline);
+            builder.addToken(mTokenTypeStaticQualifier);
+        }
     }
     builder.addToken(mTokenTypeConstQualifier);
     mStatementType->generateCode(builder);

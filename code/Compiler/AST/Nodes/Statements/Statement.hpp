@@ -106,6 +106,7 @@ END_NODE()
 DECL_NODE(StatementFunctionBaseDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
+    DECL_TOKEN(mTokenOperatorOverload);
     DECL_CHILD(StatementParametersList, mStatementParametersList);
     DECL_CHILD(StatementFunctionQualifier, mStatementFunctionQualifier);
     DECL_CHILD(StatementBlock, mStatementBody);
@@ -153,6 +154,7 @@ DECL_EXPRESSION_NODE(StatementExpressionPrimary)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenExpression);
     DECL_CHILD(StatementExpressionInvocation, mStatementExpressionInvocation);
+    DECL_CHILD(StatementExpression, mStatementEnclosedExpression);
 END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionUnary)

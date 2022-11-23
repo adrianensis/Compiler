@@ -31,13 +31,37 @@ class Vector2{
     Vector2&div(f32 rhs);
     f32 dot(const Vector2&v)const;
     f32 sqrlen()const;
-    f32 sqrdst(Vector2&v)const;
+    f32 sqrdst(const Vector2&v)const;
     f32 len()const;
     f32 max()const;
     f32 min()const;
     Vector2&nor();
+    f32 dst(const Vector2&v)const;
+    bool eq(const Vector2&v)const;
+    bool eq(const Vector2&v,f32 e)const;
+    Vector2&lerp(const Vector2&target,f32 t);
     f32 angle(const Vector2&v)const;
     Vector2&clamp(f32 maxLength);
+    Vector2&operator=(const Vector2&other);
+    Vector2&operator+=(const Vector2&rhs);
+    Vector2&operator-=(const Vector2&rhs);
+    Vector2&operator*=(const Vector2&rhs);
+    Vector2&operator/=(const Vector2&rhs);
+    Vector2&operator+=(f32 rhs);
+    Vector2&operator-=(f32 rhs);
+    Vector2&operator*=(f32 rhs);
+    Vector2&operator/=(f32 rhs);
+    bool operator==(const Vector2&rhs)const;
+    bool operator!=(const Vector2&rhs)const;
+    Vector2&operator+(const Vector2&rhs)const;
+    Vector2&operator-(const Vector2&rhs)const;
+    Vector2&operator*(const Vector2&rhs)const;
+    Vector2&operator/(const Vector2&rhs)const;
+    Vector2&operator+(f32 rhs)const;
+    Vector2&operator-(f32 rhs)const;
+    Vector2&operator-()const;
+    Vector2&operator*(f32 rhs)const;
+    Vector2&operator/(f32 rhs)const;
 
 };
 #endif // Vector2.cxx

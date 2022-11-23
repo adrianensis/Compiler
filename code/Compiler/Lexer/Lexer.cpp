@@ -57,6 +57,12 @@ Token Lexer::next()
                 return processSimpleToken(TokensDefinitions::EqualTo);
             }
             return processSimpleToken(TokensDefinitions::Equal);
+        case '!':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::NotEqualTo);
+            }
+            return processSimpleToken(TokensDefinitions::Exclamation);
         case '+':
             if(TokensDefinitions::Plus.matchString(nextChar))
             {
@@ -78,8 +84,16 @@ Token Lexer::next()
             }
             return processSimpleToken(TokensDefinitions::Minus);
         case '*':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::MulEqual);
+            }
             return processSimpleToken(TokensDefinitions::Asterisk);
         case '/':
+            if(TokensDefinitions::Equal.matchString(nextChar))
+            {
+                return processSimpleToken(TokensDefinitions::DivEqual);
+            }
             return processSimpleToken(TokensDefinitions::Slash);
         case '#':
             return processSimpleToken(TokensDefinitions::Hash);

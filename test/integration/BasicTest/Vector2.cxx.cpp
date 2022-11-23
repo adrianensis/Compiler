@@ -127,7 +127,7 @@ f32 Vector2::sqrlen()const
 
 }
 
-f32 Vector2::sqrdst(Vector2&v)const
+f32 Vector2::sqrdst(const Vector2&v)const
 {
     Vector2&sub=Vector2(v).sub(*this);
     ;
@@ -162,6 +162,31 @@ Vector2&Vector2::nor()
 
 }
 
+f32 Vector2::dst(const Vector2&v)const
+{
+    return sqrtf(this->sqrdst(v));;
+
+}
+
+bool Vector2::eq(const Vector2&v)const
+{
+    return MathUtils::eqf(this->x,v.x)&&MathUtils::eqf(this->y,v.y);;
+
+}
+
+bool Vector2::eq(const Vector2&v,f32 e)const
+{
+    return MathUtils::eqf(this->x,v.x,e)&&MathUtils::eqf(this->y,v.y,e);;
+
+}
+
+Vector2&Vector2::lerp(const Vector2&target,f32 t)
+{
+    (*this)+=Vector2(target).sub(*this).mul(t);
+    return*this;;
+
+}
+
 f32 Vector2::angle(const Vector2&v)const
 {
     f32 angle=std::atan2(v.y,v.x)-std::atan2(this->y,this->x);
@@ -184,6 +209,126 @@ Vector2&Vector2::clamp(f32 maxLength)
     }
     ;
     return*this;;
+
+}
+
+Vector2&Vector2::operator=(const Vector2&other)
+{
+    return set(other);;
+
+}
+
+Vector2&Vector2::operator+=(const Vector2&rhs)
+{
+    return this->add(rhs);;
+
+}
+
+Vector2&Vector2::operator-=(const Vector2&rhs)
+{
+    return this->sub(rhs);;
+
+}
+
+Vector2&Vector2::operator*=(const Vector2&rhs)
+{
+    return this->mul(rhs);;
+
+}
+
+Vector2&Vector2::operator/=(const Vector2&rhs)
+{
+    return this->div(rhs);;
+
+}
+
+Vector2&Vector2::operator+=(f32 rhs)
+{
+    return this->add(rhs);;
+
+}
+
+Vector2&Vector2::operator-=(f32 rhs)
+{
+    return this->sub(rhs);;
+
+}
+
+Vector2&Vector2::operator*=(f32 rhs)
+{
+    return this->mul(rhs);;
+
+}
+
+Vector2&Vector2::operator/=(f32 rhs)
+{
+    return this->div(rhs);;
+
+}
+
+bool Vector2::operator==(const Vector2&rhs)const
+{
+    return this->eq(rhs);;
+
+}
+
+bool Vector2::operator!=(const Vector2&rhs)const
+{
+    return!((*this)==rhs);;
+
+}
+
+Vector2&Vector2::operator+(const Vector2&rhs)const
+{
+    return Vector2(*this)+=rhs;;
+
+}
+
+Vector2&Vector2::operator-(const Vector2&rhs)const
+{
+    return Vector2(*this)-=rhs;;
+
+}
+
+Vector2&Vector2::operator*(const Vector2&rhs)const
+{
+    return Vector2(*this)*=rhs;;
+
+}
+
+Vector2&Vector2::operator/(const Vector2&rhs)const
+{
+    return Vector2(*this)/=rhs;;
+
+}
+
+Vector2&Vector2::operator+(f32 rhs)const
+{
+    return Vector2(*this)+=rhs;;
+
+}
+
+Vector2&Vector2::operator-(f32 rhs)const
+{
+    return Vector2(*this)-=rhs;;
+
+}
+
+Vector2&Vector2::operator-()const
+{
+    return Vector2(*this)*=-1;;
+
+}
+
+Vector2&Vector2::operator*(f32 rhs)const
+{
+    return Vector2(*this)*=rhs;;
+
+}
+
+Vector2&Vector2::operator/(f32 rhs)const
+{
+    return Vector2(*this)/=rhs;;
 
 }
 

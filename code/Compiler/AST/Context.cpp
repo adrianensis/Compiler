@@ -94,36 +94,44 @@ std::string Context::findTypedDataTypeInfoIdentifier(const std::string& identifi
     try
     {
         f32 floatValue = std::stof(identifier);
-        return "float";
+        return TokensDefinitions::Float.getValue();
     }
     catch(std::exception& e)
     {
         try
         {
             i32 integerValue = std::stoi(identifier);
-            return "int";
+            return TokensDefinitions::Int.getValue();
         }
         catch(std::exception& e)
         {
-            const TypedDataInfo* typedDataInfo = findTypedData(identifier);
-            if(typedDataInfo)
+            if(identifier == TokensDefinitions::True.getValue() ||
+            identifier == TokensDefinitions::False.getValue())
             {
-                const TypeInfo* typeInfo = findTypeInfo(typedDataInfo->mType);
-                if(typeInfo)
+                return TokensDefinitions::Bool.getValue();
+            }
+            else
+            {
+                const TypedDataInfo* typedDataInfo = findTypedData(identifier);
+                if(typedDataInfo)
                 {
-                    if(!typeInfo->mAliasedType.empty())
+                    const TypeInfo* typeInfo = findTypeInfo(typedDataInfo->mType);
+                    if(typeInfo)
                     {
-                        const TypeInfo* aliasedTypeInfo = findTypeInfo(typeInfo->mAliasedType);
-                        while(!aliasedTypeInfo->mAliasedType.empty())
+                        if(!typeInfo->mAliasedType.empty())
                         {
-                            aliasedTypeInfo = findTypeInfo(aliasedTypeInfo->mAliasedType);
+                            const TypeInfo* aliasedTypeInfo = findTypeInfo(typeInfo->mAliasedType);
+                            while(!aliasedTypeInfo->mAliasedType.empty())
+                            {
+                                aliasedTypeInfo = findTypeInfo(aliasedTypeInfo->mAliasedType);
+                            }
+
+                            return aliasedTypeInfo->mIdentifier;
                         }
-
-                        return aliasedTypeInfo->mIdentifier;
                     }
-                }
 
-                return typedDataInfo->mType;
+                    return typedDataInfo->mType;
+                }
             }
         }
     }

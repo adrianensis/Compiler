@@ -15,6 +15,12 @@ void Predefined::predefine()
     typeInfoInt.mDataType = DataType::TYPE_PRIMITIVE;
     typeInfoInt.mIsStack = true;
     mContext->getRegistry().registerInfo(typeInfoInt);
+
+    TypeInfo typeInfoBool;
+    typeInfoBool.mIdentifier = TokensDefinitions::Bool.getValue();
+    typeInfoBool.mDataType = DataType::TYPE_PRIMITIVE;
+    typeInfoBool.mIsStack = true;
+    mContext->getRegistry().registerInfo(typeInfoBool);
     
     VariableInfo variableInfoTrue;
     variableInfoTrue.mIdentifier = TokensDefinitions::True.getValue();

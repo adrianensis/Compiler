@@ -108,6 +108,8 @@ public:
     DECLARE_TOKEN(Decrement, "--");
     DECLARE_TOKEN(PlusEqual, "+=");
     DECLARE_TOKEN(MinusEqual, "-=");
+    DECLARE_TOKEN(MulEqual, "*=");
+    DECLARE_TOKEN(DivEqual, "/=");
     DECLARE_TOKEN(EqualTo, "==");
     DECLARE_TOKEN(NotEqualTo, "!=");
     DECLARE_TOKEN(LessThanEqual, "<=");
