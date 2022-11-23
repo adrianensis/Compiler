@@ -32,6 +32,7 @@ class TypedDataInfo : public BaseInfo
 public:
     std::string mType = "";
     bool mIsConst = false;
+    bool mIsStatic = false;
 };
 
 class VariableInfo : public TypedDataInfo

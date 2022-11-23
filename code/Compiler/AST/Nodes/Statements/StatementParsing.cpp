@@ -286,7 +286,8 @@ IMPL_PARSE(StatementVariableDefinition)
                     VariableInfo infoVariable;
                     infoVariable.mIdentifier = mTokenIdentifier.getLexeme();
                     infoVariable.mType = mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
-                    infoVariable.mIsConst = mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeQualifier.is(TokensDefinitions::Const);
+                    infoVariable.mIsConst = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeConstQualifier.getIsNull();
+                    infoVariable.mIsStatic = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeStaticQualifier.getIsNull();
                     getContext().getRegistry().registerInfo(infoVariable);
 
                     return true;
@@ -381,7 +382,7 @@ IMPL_PARSE(StatementParameterDefinition)
             mParameterInfo.mIdentifier = mTokenIdentifier.getLexeme();
             mParameterInfo.mType = mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
             //mParameterInfo.mScope = getContext().getScope();
-            mParameterInfo.mIsConst = mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeQualifier.is(TokensDefinitions::Const);
+            mParameterInfo.mIsConst = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeConstQualifier.getIsNull();
             //getContext().getRegistry().registerInfo(infoVariable);
             return true;
         }
@@ -681,7 +682,8 @@ IMPL_PARSE(StatementType)
 
 IMPL_PARSE(StatementTypeQualifier)
 {
-    if(expectToken(TokensDefinitions::Const, &mTokenTypeQualifier)) { /* ok */ }
+    expectToken(TokensDefinitions::Static, &mTokenTypeStaticQualifier);
+    expectToken(TokensDefinitions::Const, &mTokenTypeConstQualifier);
 
     if(mStatementType = expectNode<StatementType>()) { return true; }
     return false;

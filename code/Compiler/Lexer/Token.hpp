@@ -142,6 +142,7 @@ public:
     DECLARE_TOKEN_KEYWORD(Signed, "signed");
     DECLARE_TOKEN_KEYWORD(Sizeof, "sizeof");
     DECLARE_TOKEN_KEYWORD(Static, "static");
+    DECLARE_TOKEN_KEYWORD(Inline, "inline");
     DECLARE_TOKEN_KEYWORD(Switch, "switch");
     DECLARE_TOKEN_KEYWORD(Unsigned, "unsigned");
     DECLARE_TOKEN_KEYWORD(While, "while");

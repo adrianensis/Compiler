@@ -231,7 +231,8 @@ END_NODE()
 
 DECL_NODE(StatementTypeQualifier)
     DECL_CODEGEN()
-    DECL_TOKEN(mTokenTypeQualifier);
+    DECL_TOKEN(mTokenTypeStaticQualifier);
+    DECL_TOKEN(mTokenTypeConstQualifier);
     DECL_CHILD(StatementType, mStatementType);
 END_NODE()
 

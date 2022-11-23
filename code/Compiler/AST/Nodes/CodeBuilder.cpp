@@ -121,24 +121,36 @@ const std::string& CodeBuilder::generateCode()
 
         FOR_LIST(it, mHeaderIncludes)
         {
-            finalCode += "#include \"" + (*it) + ".hpp\"\n";
+            if(!(*it).empty())
+            {
+                finalCode += "#include \"" + (*it) + ".hpp\"\n";
+            }
         }
         
         FOR_LIST(it, mHeaderForwards)
         {
-            finalCode += "class " + (*it) + ";\n";
+            if(!(*it).empty())
+            {
+                finalCode += "class " + (*it) + ";\n";
+            }
         }
     }
     else
     {
         FOR_LIST(it, mSourceIncludes)
         {
-            finalCode += "#include \"" + (*it) + ".hpp\"\n";
+            if(!(*it).empty())
+            {
+                finalCode += "#include \"" + (*it) + ".hpp\"\n";
+            }
         }
 
         FOR_LIST(it, mSourceForwards)
         {
-            finalCode += "class " + (*it) + ";\n";
+            if(!(*it).empty())
+            {
+                finalCode += "class " + (*it) + ";\n";
+            }
         }
     }
 

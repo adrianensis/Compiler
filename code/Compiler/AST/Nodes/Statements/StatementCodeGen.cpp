@@ -443,7 +443,12 @@ IMPL_CODEGEN(StatementType)
 
 IMPL_CODEGEN(StatementTypeQualifier)
 {
-    builder.addToken(mTokenTypeQualifier);
+    if( ! mTokenTypeStaticQualifier.getIsNull())
+    {
+        builder.addTokenType(TokensDefinitions::Inline);
+        builder.addToken(mTokenTypeStaticQualifier);
+    }
+    builder.addToken(mTokenTypeConstQualifier);
     mStatementType->generateCode(builder);
 }
 
