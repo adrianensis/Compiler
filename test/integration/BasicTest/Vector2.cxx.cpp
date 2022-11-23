@@ -1,4 +1,6 @@
-#include "/home/adri/Dropbox/Projects/CPP/Compiler/test/integration/BasicTest/Vector2.cxx.hpp"
+#include "test/integration/BasicTest/Vector2.cxx.hpp"
+#include "test/integration/BasicTest/BasicTypes.cxx.hpp"
+#include "test/integration/BasicTest/MathUtils.cxx.hpp"
 Vector2::Vector2()
 {
     x=0;;

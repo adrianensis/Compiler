@@ -1,6 +1,6 @@
 #ifndef Vector2_cxx_HPP
 #define Vector2_cxx_HPP
-#include "/home/adri/Dropbox/Projects/CPP/Compiler/test/integration/BasicTest/BasicTypes.cxx.hpp"
+#include "test/integration/BasicTest/BasicTypes.cxx.hpp"
 class Vector2;
 class Vector3;
 class Vector3{

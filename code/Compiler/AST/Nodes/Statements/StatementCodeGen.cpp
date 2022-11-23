@@ -78,10 +78,7 @@ IMPL_CODEGEN(StatementClassDefinition)
     else
     {
         const TypeInfo* info = getContext().findTypeInfo(mTokenIdentifier.getLexeme());
-        if(info && !info->mPath.empty())
-        {
-            builder.includeInSource(info->mPath);
-        }
+        builder.includeInSource(info->mPath);
 
         getContext().pushScope(mTokenIdentifier.getLexeme());
         getContext().pushClassScope(mTokenIdentifier.getLexeme());
@@ -379,6 +376,28 @@ IMPL_CODEGEN(StatementExpressionBinary)
 IMPL_CODEGEN(StatementScope)
 {
     builder.addToken(mTokenScope);
+
+    const TypeInfo* info = getContext().findTypeInfo(mTokenScope.getLexeme());
+    if(info)
+    {
+        if(builder.mGenerateHeaderCode)
+        {
+            if(info->mDataType == DataType::TYPE_CLASS)
+            {
+                builder.forwardInHeader(info->mIdentifier);
+                builder.includeInSource(info->mPath);
+            }
+            else
+            {
+                builder.includeInHeader(info->mPath);
+            }
+        }
+        else
+        {
+            builder.includeInSource(info->mPath);
+        }
+    }
+
     builder.addTokenType(TokensDefinitions::Scope);
 
     if(mStatementScope)
@@ -404,27 +423,22 @@ IMPL_CODEGEN(StatementType)
     builder.addToken(mTokenType);
 
     const TypeInfo* info = getContext().findTypeInfo(mTokenType.getLexeme());
-    bool includeHeader = true;
     if(builder.mGenerateHeaderCode)
     {
-        if(info && info->mDataType == DataType::TYPE_CLASS)
+        if(info->mDataType == DataType::TYPE_CLASS)
         {
-            includeHeader = false;
-        }
-    }
-
-    if(info && !info->mPath.empty())
-    {
-        if(includeHeader)
-        {
-            builder.includeInHeader(info->mPath);
+            builder.forwardInHeader(info->mIdentifier);
+            builder.includeInSource(info->mPath);
         }
         else
         {
-            builder.forwardInHeader(info->mIdentifier);
+            builder.includeInHeader(info->mPath);
         }
     }
-    
+    else
+    {
+        builder.includeInSource(info->mPath);
+    }
 }
 
 IMPL_CODEGEN(StatementTypeQualifier)
