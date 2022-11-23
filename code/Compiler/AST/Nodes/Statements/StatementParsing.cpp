@@ -5,7 +5,7 @@
 
 // ******* MODULE *******
 IMPL_PARSE(StatementModule)
-{
+{    
     expectRepeatNode<StatementDefinition>();
 
     const Token* token = getParser()->getCurrentToken();
@@ -14,7 +14,67 @@ IMPL_PARSE(StatementModule)
         logError("Module doesn't compile!");
     }
 
+    mParsed = true;
     return true;
+}
+
+void StatementModule::parseHeader()
+{
+    if(mStatementDeclareModule = expectNode<StatementDeclareModule>())
+    {
+        while(StatementImportModule* importModuleNode = expectNode<StatementImportModule>())
+        {
+            mDependencies.push_back(importModuleNode->mTokenIdentifier.getLexeme());
+        }
+    }
+    else
+    {
+        logError("declare module missing!");
+    }
+}
+
+IMPL_PARSE(StatementDeclareModule)
+{
+    if(expectToken(TokensDefinitions::DeclareModule))
+    {
+        if(expectTokenOrError(TokensDefinitions::LeftParen))
+        {
+            if(expectTokenOrError(TokensDefinitions::Identifier, &mTokenIdentifier))
+            {
+                if(expectTokenOrError(TokensDefinitions::RightParen))
+                {
+                    if(expectTokenOrError(TokensDefinitions::Semicolon))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+IMPL_PARSE(StatementImportModule)
+{
+    if(expectToken(TokensDefinitions::ImportModule))
+    {
+        if(expectTokenOrError(TokensDefinitions::LeftParen))
+        {
+            if(expectTokenOrError(TokensDefinitions::Identifier, &mTokenIdentifier))
+            {
+                if(expectTokenOrError(TokensDefinitions::RightParen))
+                {
+                    if(expectTokenOrError(TokensDefinitions::Semicolon))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    
+    return false;
 }
 
 // ******* STATEMENT *******
@@ -90,9 +150,8 @@ IMPL_PARSE(StatementTypeAlias)
                 {
                     TypeInfo infoType;
                     infoType.mIdentifier = mTokenIdentifier.getLexeme();
-                    // TODO
-                    //infoType.mDataType = same as original
                     infoType.mPath = getParser()->mPath;
+                    infoType.mAliasedType = mStatementType->mTokenType.getLexeme();
                     getContext().getRegistry().registerInfo(infoType);
 
                     return true;
@@ -131,6 +190,7 @@ IMPL_PARSE(StatementClassDefinition)
             typeInfo.mDataType = DataType::TYPE_CLASS;
             typeInfo.mIsStack = !mTokenStack.getIsNull();
             typeInfo.mPath = getParser()->mPath;
+            getContext().getRegistry().registerInfo(typeInfo);
 
             getContext().pushScope(mTokenIdentifier.getLexeme());
             getContext().pushClassScope(mTokenIdentifier.getLexeme());
@@ -145,8 +205,6 @@ IMPL_PARSE(StatementClassDefinition)
             {        
                 getContext().popScope();
                 getContext().popClassScope();
-
-                getContext().getRegistry().registerInfo(typeInfo);
                 return true;
             }
             getContext().popScope();
@@ -180,7 +238,7 @@ IMPL_PARSE(StatementConstructorDefinition)
     if(mStatementFunctionBaseDefinition = expectNode<StatementFunctionBaseDefinition>())
     {
         FunctionInfo infoFunction;
-        infoFunction.mIdentifier = mStatementFunctionBaseDefinition->mFunctionSignature;
+        infoFunction.mIdentifier = mStatementFunctionBaseDefinition->mFunctionSignature.getSignature();
         infoFunction.mType = mStatementFunctionBaseDefinition->mTokenIdentifier.getLexeme();
         infoFunction.mIsConstructor = true;
         getContext().getRegistry().registerInfo(infoFunction);
@@ -256,7 +314,7 @@ IMPL_PARSE(StatementFunctionDefinition)
 
         if(mStatementFunctionBaseDefinition = expectNode<StatementFunctionBaseDefinition>())
         {
-            infoFunction.mIdentifier = mStatementFunctionBaseDefinition->mFunctionSignature;
+            infoFunction.mIdentifier = mStatementFunctionBaseDefinition->mFunctionSignature.getSignature();
             getContext().getRegistry().registerInfo(infoFunction);
 
             return true;
@@ -278,15 +336,15 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
             }
 
             // Generate function signature
-            mFunctionSignature = mTokenIdentifier.getLexeme();
+            mFunctionSignature.push(mTokenIdentifier.getLexeme());
             FOR_LIST(it, mStatementParametersList->getChildren())
             {
                 const StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(*it);
-                mFunctionSignature += paramDefNode->mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
+                mFunctionSignature.push(paramDefNode->mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
             }
 
             // set scope now
-            getContext().pushScope(mFunctionSignature);
+            getContext().pushScope(mFunctionSignature.getSignature());
 
             // Register parameter infos
             FOR_LIST(it, mStatementParametersList->getChildren())
@@ -452,8 +510,8 @@ IMPL_PARSE(StatementExpressionInvocation)
         {
             if(mStatementExpressionCompoundInvocation = expectNode<StatementExpressionCompoundInvocation>())
             {
-                //setRootTypeNode(mStatementExpressionCompoundInvocation);
-                setRootTypeIdentifier(mTokenThis.getLexeme());
+                setRootTypeNode(mStatementExpressionCompoundInvocation);
+                //setRootTypeIdentifier(mTokenThis.getLexeme());
                 return true;
             }
         }
@@ -527,14 +585,15 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
         if(mStatementExpressionFunctionParametersList = expectNode<StatementExpressionFunctionParametersList>())
         {
             // Generate function signature
-            std::string functionSignature = mTokenIdentifier.getLexeme();
+            FunctionSignatureBuilder functionSignature;
+            functionSignature.push(mTokenIdentifier.getLexeme());
             FOR_LIST(it, mStatementExpressionFunctionParametersList->getChildren())
             {
                 const StatementExpression* paramExpression = dynamic_cast<StatementExpression*>(*it);
                 const std::string typeIdentifier = getContext().findTypedDataTypeInfoIdentifier(paramExpression->getRootTypeIdentifier());
-                functionSignature += typeIdentifier;
+                functionSignature.push(typeIdentifier);
             }
-            setRootTypeIdentifier(functionSignature);
+            setRootTypeIdentifier(functionSignature.getSignature());
             return true;
         }
     }

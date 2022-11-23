@@ -5,7 +5,7 @@
 
 AST::~AST() 
 {
-    DELETE_CONTENT(mModules);
+    MAP_DELETE_CONTENT(mModules);
     DELETE_CONTENT(mParsers);
 }
 
@@ -29,23 +29,28 @@ void AST::generateCode()
         {
             std::ostringstream ss;
             ss << file.rdbuf(); // reading data
-            std::string str = ss.str();
+            std::string fileContent = ss.str();
             
-            parse(*it, str);
+            initModule(*it, fileContent);
         }
 
         file.close();
     }
+    
+    FOR_MAP(it, mModules)
+    {   
+        parseModule(it->second);
+    }
 
-    FOR_LIST(it, mModules)
+    FOR_MAP(it, mModules)
     {
-        generateCode((*it)->mPath, (*it));
+        generateCode(it->second);
     }
 }
 
-void AST::parse(const std::string& path, const std::string& content)
+void AST::initModule(const std::string& path, const std::string& content)
 {
-    std::cout << "PARSING " << path << std::endl;
+    std::cout << "INIT " << path << std::endl;
 
     Parser* parser = new Parser(content);
     mParsers.push_back(parser);
@@ -53,18 +58,38 @@ void AST::parse(const std::string& path, const std::string& content)
     parser->parse();
 
     StatementModule* module = new StatementModule();
-    mModules.push_back(module);
     module->mPath = path;
     module->init(parser, &mContext);
+
+    module->parseHeader();
+
+    std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
+    MAP_INSERT(mModules, moduleName, module);
+}
+
+void AST::parseModule(StatementModule* module)
+{
+    if(module->mParsed)
+    {
+        return;
+    }
+
+    std::cout << "PARSING " << module->mPath << std::endl;
+    
+    FOR_LIST(it, module->mDependencies)
+    {
+        parseModule(mModules[*it]);
+    }
+
     module->parse();
 }
 
-void AST::generateCode(const std::string& path, StatementModule* module)
+void AST::generateCode(StatementModule* module)
 {
-    std::cout << "CODE BUILDING " << path << std::endl;
+    std::cout << "CODE BUILDING " << module->mPath << std::endl;
 
     CodeBuilder builderHeader;
-    builderHeader.setFileName(std::filesystem::path( path ).filename());
+    builderHeader.setFileName(std::filesystem::path( module->mPath ).filename());
     builderHeader.mGenerateHeaderCode = true;
     module->generateCode(builderHeader);
     std::string headerCode = builderHeader.generateCode();
@@ -77,7 +102,7 @@ void AST::generateCode(const std::string& path, StatementModule* module)
     // std::cout << sourceCode << std::endl;
 
     std::ofstream headerFile;
-	headerFile.open(path + ".hpp");
+	headerFile.open(module->mPath + ".hpp");
 
 	if(headerFile.good() && !headerFile.fail())
 	{
@@ -87,7 +112,7 @@ void AST::generateCode(const std::string& path, StatementModule* module)
 	headerFile.close();
 
     std::ofstream sourceFile;
-	sourceFile.open(path + ".cpp");
+	sourceFile.open(module->mPath + ".cpp");
 
 	if(sourceFile.good() && !sourceFile.fail())
 	{

@@ -82,7 +82,7 @@ bool Node::expectToken(const TokenType& type, Token* capture /*= nullptr*/)
 
 bool Node::expectTokenOrError(const TokenType& type, Token* capture /*= nullptr*/) 
 {
-    bool result = expectToken(type);
+    bool result = expectToken(type, capture);
 
     if(!result)
     {

@@ -4,11 +4,25 @@
 #include "Core/Module.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
+#include "Compiler/AST/FunctionSignatureBuilder.hpp"
 
 // ******* MODULE *******
 DECL_NODE(StatementModule)
+    DECL_CHILD(StatementDeclareModule, mStatementDeclareModule);
+    DECL_CHILD(StatementImportModule, mStatementImportModule);
 public:
     std::string mPath;
+    bool mParsed = false;
+    std::vector<std::string> mDependencies;
+    void parseHeader();
+END_NODE()
+
+DECL_NODE(StatementDeclareModule)
+    DECL_TOKEN(mTokenIdentifier);
+END_NODE()
+
+DECL_NODE(StatementImportModule)
+    DECL_TOKEN(mTokenIdentifier);
 END_NODE()
 
 // ******* STATEMENT *******
@@ -96,7 +110,7 @@ DECL_NODE(StatementFunctionBaseDefinition)
     DECL_CHILD(StatementFunctionQualifier, mStatementFunctionQualifier);
     DECL_CHILD(StatementBlock, mStatementBody);
 public:
-    std::string mFunctionSignature;
+    FunctionSignatureBuilder mFunctionSignature;
 END_NODE()
 
 DECL_NODE(StatementFunctionDefinition)

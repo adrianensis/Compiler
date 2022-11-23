@@ -6,3 +6,5 @@
 
 // #define this (*this)
 #define stack 
+#define import_module(...)
+#define decl_module(...)

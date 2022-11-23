@@ -151,6 +151,8 @@ public:
     DECLARE_TOKEN_KEYWORD(Protected, "protected");
     DECLARE_TOKEN_KEYWORD(Private, "private");
     DECLARE_TOKEN_KEYWORD(This, "this");
+    DECLARE_TOKEN_KEYWORD(DeclareModule, "decl_module");
+    DECLARE_TOKEN_KEYWORD(ImportModule, "import_module");
 
     // special
     DECLARE_TOKEN(Comment, std::string());

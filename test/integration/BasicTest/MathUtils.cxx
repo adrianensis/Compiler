@@ -1,3 +1,7 @@
+decl_module(MathUtils);
+
+import_module(Basic);
+
 class MathUtils
 {
     public:

@@ -148,7 +148,7 @@ IMPL_CODEGEN(StatementFunctionBaseDefinition)
 
     builder.addToken(mTokenIdentifier);
     
-    getContext().pushScope(mFunctionSignature);
+    getContext().pushScope(mFunctionSignature.getSignature());
     builder.addTokenType(TokensDefinitions::LeftParen);
     mStatementParametersList->generateCode(builder);
     builder.addTokenType(TokensDefinitions::RightParen);

@@ -13,7 +13,7 @@ enum class DataType {
 class BaseInfo
 {
 public:
-    std::string mIdentifier;
+    std::string mIdentifier = "";
     std::string mPath = "";
 
     virtual std::string getKey() const { return mIdentifier; }
@@ -24,12 +24,13 @@ class TypeInfo : public BaseInfo
 public:
     DataType mDataType = DataType::TYPE_PRIMITIVE;
     bool mIsStack = false;
+    std::string mAliasedType = "";
 };
 
 class TypedDataInfo : public BaseInfo
 {
 public:
-    std::string mType;
+    std::string mType = "";
     bool mIsConst = false;
 };
 

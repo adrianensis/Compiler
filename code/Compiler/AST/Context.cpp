@@ -108,6 +108,21 @@ std::string Context::findTypedDataTypeInfoIdentifier(const std::string& identifi
             const TypedDataInfo* typedDataInfo = findTypedData(identifier);
             if(typedDataInfo)
             {
+                const TypeInfo* typeInfo = findTypeInfo(typedDataInfo->mType);
+                if(typeInfo)
+                {
+                    if(!typeInfo->mAliasedType.empty())
+                    {
+                        const TypeInfo* aliasedTypeInfo = findTypeInfo(typeInfo->mAliasedType);
+                        while(!aliasedTypeInfo->mAliasedType.empty())
+                        {
+                            aliasedTypeInfo = findTypeInfo(aliasedTypeInfo->mAliasedType);
+                        }
+
+                        return aliasedTypeInfo->mIdentifier;
+                    }
+                }
+
                 return typedDataInfo->mType;
             }
         }

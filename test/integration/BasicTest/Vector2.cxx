@@ -1,3 +1,7 @@
+decl_module(Vector2);
+
+import_module(MathUtils);
+
 stack class Vector3
 {
 public:

@@ -16,12 +16,13 @@ public:
     void generateCode();
 
 private:
-    void parse(const std::string& path, const std::string& content);
-    void generateCode(const std::string& path, StatementModule* module);
+    void initModule(const std::string& path, const std::string& content);
+    void parseModule(StatementModule* module);
+    void generateCode(StatementModule* module);
 
 private:
     std::vector<std::string> mFiles;
-    std::vector<StatementModule*> mModules;
+    std::map<std::string, StatementModule*> mModules;
     std::vector<Parser*> mParsers;
     Context mContext;
 };
