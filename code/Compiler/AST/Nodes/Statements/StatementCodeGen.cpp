@@ -38,7 +38,15 @@ IMPL_CODEGEN(StatementBranch)
     builder.addTokenType(TokensDefinitions::LeftParen);
     mStatementExpression->generateCode(builder);
     builder.addTokenType(TokensDefinitions::RightParen);
-    mStatementBody->generateCode(builder);
+    builder.newLine();
+    mStatementIfBody->generateCode(builder);
+    
+    if(mStatementElseBody)
+    {
+        builder.addTokenType(TokensDefinitions::Else);
+        builder.newLine();
+        mStatementElseBody->generateCode(builder);
+    }
 }
 
 IMPL_CODEGEN(StatementTypeAlias)

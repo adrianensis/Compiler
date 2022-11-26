@@ -1,5 +1,7 @@
 #include "test/integration/BasicTest/Vector2.cxx.hpp"
 #include "test/integration/BasicTest/BasicTypes.cxx.hpp"
+#include "test/integration/BasicTest/Vector3.cxx.hpp"
+#include "test/integration/BasicTest/Vector4.cxx.hpp"
 #include "test/integration/BasicTest/MathUtils.cxx.hpp"
 Vector2::Vector2()
 {
@@ -29,6 +31,13 @@ Vector2::Vector2(const Vector3&other)
 
 }
 
+Vector2::Vector2(const Vector4&other)
+{
+    this->x=other.x;;
+    this->y=other.y;;
+
+}
+
 Vector2&Vector2::set(f32 x,f32 y)
 {
     this->x=x;;
@@ -45,6 +54,13 @@ Vector2&Vector2::set(const Vector2&rhs)
 }
 
 Vector2&Vector2::set(const Vector3&rhs)
+{
+    this->set(rhs.x,rhs.y);
+    return*this;;
+
+}
+
+Vector2&Vector2::set(const Vector4&rhs)
 {
     this->set(rhs.x,rhs.y);
     return*this;;
@@ -191,7 +207,8 @@ f32 Vector2::angle(const Vector2&v)const
 {
     f32 angle=std::atan2(v.y,v.x)-std::atan2(this->y,this->x);
     ;
-    if(angle<0){
+    if(angle<0)
+    {
         angle+=2*MathUtils::PI;
 
     }
@@ -202,7 +219,8 @@ f32 Vector2::angle(const Vector2&v)const
 
 Vector2&Vector2::clamp(f32 maxLength)
 {
-    if(this->sqrlen()>maxLength*maxLength){
+    if(this->sqrlen()>maxLength*maxLength)
+    {
         this->nor();
         this->mul(maxLength);
 

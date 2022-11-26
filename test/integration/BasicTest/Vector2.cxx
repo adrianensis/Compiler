@@ -1,15 +1,7 @@
 decl_module(Vector2);
 
 import_module(MathUtils);
-
-stack class Vector3
-{
-public:
-
-	f32 x = 0;
-	f32 y = 0;
-	f32 z = 0;
-};
+import_module(Vector3);
 
 stack class Vector2
 {
@@ -42,11 +34,11 @@ public:
         this.y = other.y;
     }
 
-    // Vector2(Vector4 other)
-    // {
-    //     this.x = other.x;
-    //     this.y = other.y;
-    // }
+    Vector2(const Vector4 other)
+    {
+        this.x = other.x;
+        this.y = other.y;
+    }
 
     Vector2 set(f32 x, f32 y)
     {
@@ -67,11 +59,11 @@ public:
         return this;
     }
 
-    // Vector2& set(const Vector4& rhs)
-    // {
-    //     this.set(rhs.x, rhs.y);
-    //     return *this;
-    // }
+    Vector2 set(const Vector4 rhs)
+    {
+        this.set(rhs.x, rhs.y);
+        return this;
+    }
 
     Vector2 add(const Vector2 rhs)
     {
@@ -240,4 +232,6 @@ public:
     Vector2 operator-() const{ return Vector2(this) *= -1; }
     Vector2 operator*(f32 rhs) const {return Vector2(this) *= rhs; }
     Vector2 operator/(f32 rhs) const {return Vector2(this) /= rhs; }
+    // f32& operator[](const size_t index) { return get(index); }
+    // f32 operator[](const size_t index) const { return get(index); }
 };

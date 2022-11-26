@@ -13,6 +13,7 @@ DECL_NODE(StatementModule)
 public:
     std::string mPath;
     bool mParsed = false;
+    bool mIsParsing = false;
     std::vector<std::string> mDependencies;
     void parseHeader();
 END_NODE()
@@ -43,7 +44,8 @@ END_NODE()
 DECL_NODE(StatementBranch)
     DECL_CODEGEN()
     DECL_CHILD(StatementExpression, mStatementExpression);
-    DECL_CHILD(StatementBlock, mStatementBody);
+    DECL_CHILD(StatementBlock, mStatementIfBody);
+    DECL_CHILD(StatementBlock, mStatementElseBody);
 END_NODE()
 
 DECL_NODE(StatementTypeAlias)

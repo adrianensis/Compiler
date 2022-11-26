@@ -32,17 +32,17 @@ void Predefined::predefine()
     variableInfoFalse.mType = TokensDefinitions::Bool.getValue();
     mContext->getRegistry().registerInfo(variableInfoFalse);
     
-    mContext->pushScope("std");
+    // mContext->pushScope("std");
     
-    FunctionInfo functionInfoAcos;
-    functionInfoAcos.mIdentifier = "acos;float";
-    functionInfoAcos.mType = "float";
-    mContext->getRegistry().registerInfo(functionInfoAcos);
+    // FunctionInfo functionInfoAcos;
+    // functionInfoAcos.mIdentifier = "acos;float";
+    // functionInfoAcos.mType = "float";
+    // mContext->getRegistry().registerInfo(functionInfoAcos);
     
-    FunctionInfo functionInfoSqrt;
-    functionInfoSqrt.mIdentifier = "sqrt;float";
-    functionInfoSqrt.mType = "float";
-    mContext->getRegistry().registerInfo(functionInfoSqrt);
+    // FunctionInfo functionInfoSqrt;
+    // functionInfoSqrt.mIdentifier = "sqrt;float";
+    // functionInfoSqrt.mType = "float";
+    // mContext->getRegistry().registerInfo(functionInfoSqrt);
 
-    mContext->popScope();
+    // mContext->popScope();
 }

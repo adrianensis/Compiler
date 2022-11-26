@@ -15,6 +15,7 @@ IMPL_PARSE(StatementModule)
     }
 
     mParsed = true;
+    mParsed = false;
     return true;
 }
 
@@ -128,9 +129,19 @@ IMPL_PARSE(StatementBranch)
     {
         if(mStatementExpression = expectNodeEnclosed<StatementExpression>(TokensDefinitions::LeftParen, TokensDefinitions::RightParen))
         {
-            if(mStatementBody = expectNode<StatementBlock>())
+            if(mStatementIfBody = expectNode<StatementBlock>())
             {
-                return true;
+                if(expectToken(TokensDefinitions::Else))
+                {
+                    if(mStatementElseBody = expectNode<StatementBlock>())
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
     }

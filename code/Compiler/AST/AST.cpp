@@ -69,19 +69,29 @@ void AST::initModule(const std::string& path, const std::string& content)
 
 void AST::parseModule(StatementModule* module)
 {
-    if(module->mParsed)
+    if(!module->mParsed && !module->mIsParsing)
     {
-        return;
-    }
+        std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
+        std::cout << "PARSING " << moduleName << std::endl;
+        module->mIsParsing = true;
 
-    std::cout << "PARSING " << module->mPath << std::endl;
-    
-    FOR_LIST(it, module->mDependencies)
-    {
-        parseModule(mModules[*it]);
-    }
+        FOR_LIST(it, module->mDependencies)
+        {
+            StatementModule* dependency = mModules[*it];
+            std::string dependencyName = dependency->mStatementDeclareModule->mTokenIdentifier.getLexeme();
+            std::cout << "DEPENDENCY DETECTED " << dependencyName << std::endl;
+            parseModule(dependency);
+        }
 
-    module->parse();
+        if(module->mParsed)
+        {
+            return;
+        }
+
+        module->parse();
+
+        std::cout << "PARSED " << moduleName << std::endl;
+    }
 }
 
 void AST::generateCode(StatementModule* module)

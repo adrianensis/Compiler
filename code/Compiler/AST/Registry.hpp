@@ -103,10 +103,10 @@ public:
             ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
         }
 
-        if(registered)
-        {
-            std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
-        }
+        // if(registered)
+        // {
+        //     std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
+        // }
 
         return registered;
     }
