@@ -30,6 +30,4 @@ void ScopeBuilder::regenerateScope()
         }
         mScope += scope;
     }
-
-    //std::cout << "SCOPE " << mScope << std::endl;
 }

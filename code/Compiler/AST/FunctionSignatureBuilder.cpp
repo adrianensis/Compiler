@@ -19,6 +19,4 @@ void FunctionSignatureBuilder::regenerateSignature()
         }
         mSignature += signature;
     }
-
-    //std::cout << "SCOPE " << mScope << std::endl;
 }

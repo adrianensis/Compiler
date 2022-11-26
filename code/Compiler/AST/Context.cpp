@@ -188,7 +188,7 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
     {
         if(!scopeBuilder.hasScope())
         {
-            std::cout << "Undefined Type: " << typeIdentifier << std::endl;
+            ECHO("Undefined Type: " + typeIdentifier);
             return nullptr;
         }
 
@@ -217,6 +217,6 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
         return getRegistryFromScope(currentScope).getInfo<TypeInfo>(typeIdentifier);
     }
     
-    std::cout << "Undefined Type: " << typeIdentifier << std::endl;
+    ECHO("Undefined Type: " + typeIdentifier);
     return nullptr;
 }

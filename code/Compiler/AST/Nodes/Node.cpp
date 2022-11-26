@@ -43,15 +43,12 @@ Node* Node::internalExpectNode(Node* node)
     node->init(mParser, mContext);
     bool parseResult = false;
     parseResult = node->parse();
-    //std::cout << std::boolalpha << typeid(*this).name() << " parse: " << parseResult << std::endl;
     if(parseResult)
     {
-        //std::cout << "PARSED: " << typeid(*this).name() << std::endl;
-
         mChildren.emplace_back(node);
-    } else {
-        //std::cout << "no: " << typeid(*this).name() << std::endl;
-
+    }
+    else
+    {
         node->revert();
         delete node;
         return nullptr;
@@ -73,7 +70,7 @@ bool Node::expectToken(const TokenType& type, Token* capture /*= nullptr*/)
         {
             *capture = *token;
         }
-        //std::cout << typeid(*this).name() << ": " << token->getLexeme() << std::endl;
+
         mParser->advance();
     }
 
@@ -116,13 +113,13 @@ void Node::logError(const std::string& error) const
 {
     const Token* token = mParser->getCurrentToken();
     const Token* nextToken = mParser->getNextToken();
-    std::cout << std::endl;
-    std::cout << "ERROR: " << typeid(*this).name() << std::endl;
-    std::cout << "ERROR: line " << (token->getLineNumber() + 1) << ": " << mParser->getLine(token->getLineNumber()) << std::endl;
-    std::cout << "ERROR: at token " << token->getLexeme() << std::endl;
+    BRLINE()
+    ECHO("ERROR: " + std::string(typeid(*this).name()));
+    ECHO("ERROR: line " + std::to_string((token->getLineNumber() + 1)) + ": " + mParser->getLine(token->getLineNumber()));
+    ECHO("ERROR: at token " + token->getLexeme());
     if(nextToken)
     {
-        std::cout << "ERROR: next token " << nextToken->getLexeme() << std::endl;
+        ECHO("ERROR: next token " + nextToken->getLexeme());
     }
-    std::cout << "ERROR: " << error << std::endl;
+    ECHO("ERROR: " + error);
 }

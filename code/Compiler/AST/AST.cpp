@@ -50,7 +50,7 @@ void AST::generateCode()
 
 void AST::initModule(const std::string& path, const std::string& content)
 {
-    std::cout << "INIT " << path << std::endl;
+    ECHO("INIT " + path);
 
     Parser* parser = new Parser(content);
     mParsers.push_back(parser);
@@ -72,14 +72,14 @@ void AST::parseModule(StatementModule* module)
     if(!module->mParsed && !module->mIsParsing)
     {
         std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-        std::cout << "PARSING " << moduleName << std::endl;
+        ECHO("PARSING " + moduleName);
         module->mIsParsing = true;
 
         FOR_LIST(it, module->mDependencies)
         {
             StatementModule* dependency = mModules[*it];
             std::string dependencyName = dependency->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-            std::cout << "DEPENDENCY DETECTED " << dependencyName << std::endl;
+            ECHO("DEPENDENCY DETECTED " + dependencyName);
             parseModule(dependency);
         }
 
@@ -90,13 +90,13 @@ void AST::parseModule(StatementModule* module)
 
         module->parse();
 
-        std::cout << "PARSED " << moduleName << std::endl;
+        ECHO("PARSED " + moduleName);
     }
 }
 
 void AST::generateCode(StatementModule* module)
 {
-    std::cout << "CODE BUILDING " << module->mPath << std::endl;
+    ECHO("CODE BUILDING " + module->mPath);
 
     CodeBuilder builderHeader;
     builderHeader.setFileName(std::filesystem::path( module->mPath ).filename());
@@ -107,9 +107,6 @@ void AST::generateCode(StatementModule* module)
     CodeBuilder builderSource;
     module->generateCode(builderSource);
     std::string sourceCode = builderSource.generateCode();
-
-    // std::cout << headerCode << std::endl;
-    // std::cout << sourceCode << std::endl;
 
     std::ofstream headerFile;
 	headerFile.open(module->mPath + ".hpp");

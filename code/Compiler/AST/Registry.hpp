@@ -66,7 +66,7 @@ public:
         {
             if(getInfo<TypeInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                ECHO("Duplicated " + info.getKey());
             }
             else
             {
@@ -78,7 +78,7 @@ public:
         {
             if(getInfo<VariableInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                ECHO("Duplicated " + info.getKey());
             }
             else
             {
@@ -90,7 +90,7 @@ public:
         {
             if(getInfo<FunctionInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                ECHO("Duplicated " + info.getKey());
             }
             else
             {
@@ -102,11 +102,6 @@ public:
         {
             ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
         }
-
-        // if(registered)
-        // {
-        //     std::cout << "REGISTER " << typeid(T).name() << " " << info.getKey() << std::endl;
-        // }
 
         return registered;
     }

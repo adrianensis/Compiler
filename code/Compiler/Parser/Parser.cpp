@@ -6,8 +6,6 @@ void Parser::parse()
     Token token;
     for (token = mLexer.next(); ! token.isOneOf(TokensDefinitions::End, TokensDefinitions::Unexpected); token = mLexer.next()) 
     {
-        //std::cout << token.toString() << std::endl;
-
         if(!token.is(TokensDefinitions::Comment))
         {
             mTokens.emplace_back(token);
@@ -46,8 +44,6 @@ const Token* Parser::advance()
     // {
     //     return nullptr;
     // }
-
-    //std::cout << "Parser advance: " << mTokens.at(mTokenIndex+1).toString() << std::endl;
 
     mTokenIndex++;
     return &mTokens.at(mTokenIndex);
