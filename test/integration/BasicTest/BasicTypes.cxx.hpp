@@ -1,10 +1,6 @@
 #ifndef BasicTypes_cxx_HPP
 #define BasicTypes_cxx_HPP
 #include "test/integration/BasicTest/BasicTypes.cxx.hpp"
-
-#include <cstdint> // std::uintptr_t
-#include <cstring>
-#include <cmath> /* ceil, max */
 using f32=float;
 using f64=double;
 using i8=std::int8_t;

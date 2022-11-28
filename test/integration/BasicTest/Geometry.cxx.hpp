@@ -18,7 +18,7 @@ class Face{
 
 };
 class Shape{
-    public:
+    protected:
     u32 mVerticesCount=0;
     public:
     virtual bool isZero()const=0;
@@ -26,7 +26,7 @@ class Shape{
 };
 class Line:public Shape{
     public:
-    public:
+    private:
     Vector3 mStart=Vector3();
     Vector3 mEnd=Vector3();
     public:
@@ -39,7 +39,7 @@ class Line:public Shape{
 };
 class Rectangle:public Shape{
     public:
-    public:
+    protected:
     Vector3 mLeftTopFront=Vector3();
     Vector3 mSize=Vector3();
     public:
@@ -58,7 +58,7 @@ class Cube:public Rectangle{
 };
 class Sphere:public Shape{
     public:
-    public:
+    protected:
     Vector3 mCenter=Vector3();
     f32 mRadius=0;
     public:
