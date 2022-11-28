@@ -19,6 +19,12 @@ Face&Face::operator=(const Face&rhs)
 
 }
 
+u32 Shape::getVerticesCount()const
+{
+    return mVerticesCount;;
+
+}
+
 Line::Line()
 {
     mVerticesCount=2;;
@@ -51,6 +57,18 @@ bool Line::isZero()const
 
 }
 
+const Vector3&Line::getStart()const
+{
+    return mStart;;
+
+}
+
+const Vector3&Line::getEnd()const
+{
+    return mEnd;;
+
+}
+
 Rectangle::Rectangle()
 {
     mVerticesCount=4;;
@@ -73,6 +91,18 @@ void Rectangle::set(const Vector3&leftTopFront,const Vector3&size)
 bool Rectangle::isZero()const
 {
     return getSize().len()<=MathUtils::FLOAT_EPSILON;;
+
+}
+
+const Vector3&Rectangle::getLeftTopFront()const
+{
+    return mLeftTopFront;;
+
+}
+
+const Vector3&Rectangle::getSize()const
+{
+    return mSize;;
 
 }
 
@@ -104,6 +134,18 @@ Sphere::Sphere(const Vector3&center,f32 radius)
 bool Sphere::isZero()const
 {
     return mRadius<=MathUtils::FLOAT_EPSILON;;
+
+}
+
+const Vector3&Sphere::getCenter()const
+{
+    return mCenter;;
+
+}
+
+f32 Sphere::getRadius()const
+{
+    return mRadius;;
 
 }
 

@@ -22,6 +22,7 @@ class Shape{
     u32 mVerticesCount=0;
     public:
     virtual bool isZero()const=0;
+    u32 getVerticesCount()const;
 
 };
 class Line:public Shape{
@@ -35,6 +36,8 @@ class Line:public Shape{
     Line(const Vector3&start,const Vector3&end);
     Vector3&toVector()const;
     bool isZero()const override;
+    const Vector3&getStart()const;
+    const Vector3&getEnd()const;
 
 };
 class Rectangle:public Shape{
@@ -47,6 +50,8 @@ class Rectangle:public Shape{
     Rectangle(const Vector3&leftTopFront,const Vector3&size);
     void set(const Vector3&leftTopFront,const Vector3&size);
     bool isZero()const override;
+    const Vector3&getLeftTopFront()const;
+    const Vector3&getSize()const;
 
 };
 class Cube:public Rectangle{
@@ -65,6 +70,8 @@ class Sphere:public Shape{
     Sphere();
     Sphere(const Vector3&center,f32 radius);
     bool isZero()const override;
+    const Vector3&getCenter()const;
+    f32 getRadius()const;
 
 };
 class Geometry{

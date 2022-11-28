@@ -42,6 +42,9 @@ public:
 
     virtual bool isZero() const = 0;
 
+    // TODO: autogenerate
+    u32 getVerticesCount() const { return mVerticesCount; }
+
     // void serialize(JSON json) const override { }
 	// void deserialize(const JSON json) override { }
 
@@ -85,6 +88,10 @@ public:
     {
         return toVector().len() <= MathUtils::FLOAT_EPSILON;
     }
+
+    // TODO: autogenerate
+    const Vector3 getStart() const { return mStart; }
+    const Vector3 getEnd() const { return mEnd; }
 
     // COPY(Line)
     // {
@@ -146,6 +153,9 @@ public:
     {
         return getSize().len() <= MathUtils::FLOAT_EPSILON;
     }
+
+    const Vector3 getLeftTopFront() const { return mLeftTopFront; }
+    const Vector3 getSize() const { return mSize; }
 
     // COPY(Rectangle)
     // {
@@ -213,6 +223,9 @@ public:
     {
         return mRadius <= MathUtils::FLOAT_EPSILON;
     }
+
+    const Vector3 getCenter() const { return mCenter; }
+    f32 getRadius() const { return mRadius; }
 
     // COPY(Sphere)
     // {
