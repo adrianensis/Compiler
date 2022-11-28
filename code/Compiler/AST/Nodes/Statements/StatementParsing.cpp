@@ -196,6 +196,26 @@ IMPL_PARSE(StatementClassDefinition)
     {
         if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
         {
+            bool extendClassOk = true;
+            if(expectToken(TokensDefinitions::Colon))
+            {
+                extendClassOk = false;
+                if(expectNode<StatementClassVisibility>())
+                {
+                    extendClassOk = false;
+                    // Parent class
+                    if(expectToken(TokensDefinitions::Identifier, &mTokenParentClassIdentifier))
+                    {
+                        extendClassOk = true;
+                    }
+                }
+            }
+
+            if(!extendClassOk)
+            {
+                return false;
+            }
+
             TypeInfo typeInfo;
             typeInfo.mIdentifier = mTokenIdentifier.getLexeme();
             typeInfo.mDataType = DataType::TYPE_CLASS;
@@ -298,7 +318,7 @@ IMPL_PARSE(StatementVariableDefinition)
                     infoVariable.mIdentifier = mTokenIdentifier.getLexeme();
                     infoVariable.mType = mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
                     infoVariable.mIsConst = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeConstQualifier.getIsNull();
-                    infoVariable.mIsStatic = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeStaticQualifier.getIsNull();
+                    infoVariable.mIsStatic = ! mStatementTypeQualifierVariable->mTokenTypeStaticQualifier.getIsNull();
                     getContext().getRegistry().registerInfo(infoVariable);
 
                     return true;
@@ -374,7 +394,7 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
             FOR_LIST(it, mStatementParametersList->getChildren())
             {
                 const StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(*it);
-                mFunctionSignature.push(paramDefNode->mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
+                mFunctionSignature.push(paramDefNode->mStatementTypeQualifierParameter->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
             }
 
             // set scope now
@@ -392,6 +412,18 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
                 getContext().popScope();
                 return true;
             }
+            else
+            {
+                if(mStatementFunctionQualifier->mIsPure)
+                {
+                    if(expectToken(TokensDefinitions::Semicolon))
+                    {
+                        getContext().popScope();
+                        return true;
+                    }
+                }
+            }
+
             getContext().popScope();
         }
     }
@@ -401,21 +433,44 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
 
 IMPL_PARSE(StatementFunctionQualifier)
 {
-    if(expectToken(TokensDefinitions::Const, &mTokenQualifier)) { return true; }
-    return false;
+    expectToken(TokensDefinitions::Const, &mTokenQualifierConst);
+
+    if(expectToken(TokensDefinitions::Override, &mTokenQualifierOverride))
+    {
+        // ok
+    }
+    else
+    {
+        if(expectToken(TokensDefinitions::Equal))
+        {
+            Token tokenNumber;
+            if(expectToken(TokensDefinitions::Number, &tokenNumber))
+            {
+                if(tokenNumber.getLexeme() == "0")
+                {
+                    mIsPure = true;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    return true;
 }
 
 IMPL_PARSE(StatementParameterDefinition)
 {
-    if(mStatementTypeQualifierVariable = expectNode<StatementTypeQualifierVariable>())
+    if(mStatementTypeQualifierParameter = expectNode<StatementTypeQualifierParameter>())
     {
         if(expectToken(TokensDefinitions::Identifier, &mTokenIdentifier))
         {
             //VariableInfo infoVariable;
             mParameterInfo.mIdentifier = mTokenIdentifier.getLexeme();
-            mParameterInfo.mType = mStatementTypeQualifierVariable->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
+            mParameterInfo.mType = mStatementTypeQualifierParameter->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme();
             //mParameterInfo.mScope = getContext().getScope();
-            mParameterInfo.mIsConst = ! mStatementTypeQualifierVariable->mStatementTypeQualifier->mTokenTypeConstQualifier.getIsNull();
+            mParameterInfo.mIsConst = ! mStatementTypeQualifierParameter->mStatementTypeQualifier->mTokenTypeConstQualifier.getIsNull();
             //getContext().getRegistry().registerInfo(infoVariable);
             return true;
         }
@@ -497,6 +552,11 @@ IMPL_PARSE(StatementExpressionUnary)
 
 IMPL_PARSE(StatementExpressionBinary)
 {
+    if(mStatementUnaryOperatorPre = expectNode<StatementUnaryOperator>())
+    {
+        // ok
+    }
+
     if(mStatementExpressionPrimary = expectNode<StatementExpressionPrimary>())
     {
         if(mStatementBinaryOperator = expectNode<StatementBinaryOperator>())
@@ -714,8 +774,11 @@ IMPL_PARSE(StatementBinaryOperator)
 // ******* TYPE *******
 IMPL_PARSE(StatementType)
 {
+    mStatementScope = expectNode<StatementScope>();
+    
     if(expectToken(TokensDefinitions::Int, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Float, &mTokenType)) { return true; }
+    if(expectToken(TokensDefinitions::Double, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Bool, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Void, &mTokenType)) { return true; }
     if(expectToken(TokensDefinitions::Identifier, &mTokenType)) { return true; }
@@ -724,7 +787,6 @@ IMPL_PARSE(StatementType)
 
 IMPL_PARSE(StatementTypeQualifier)
 {
-    expectToken(TokensDefinitions::Static, &mTokenTypeStaticQualifier);
     expectToken(TokensDefinitions::Const, &mTokenTypeConstQualifier);
 
     if(mStatementType = expectNode<StatementType>()) { return true; }
@@ -733,12 +795,24 @@ IMPL_PARSE(StatementTypeQualifier)
 
 IMPL_PARSE(StatementTypeQualifierVariable)
 {
+    expectToken(TokensDefinitions::Static, &mTokenTypeStaticQualifier);
+
+    if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>()) { return true; }
+    return false;
+}
+
+IMPL_PARSE(StatementTypeQualifierParameter)
+{
     if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>()) { return true; }
     return false;
 }
 
 IMPL_PARSE(StatementTypeQualifierFunctionReturn)
 {
+    expectToken(TokensDefinitions::Static, &mTokenTypeStaticQualifier);
+
+    expectToken(TokensDefinitions::Virtual, &mTokenTypeVirtualQualifier);
+
     if(mStatementTypeQualifier = expectNode<StatementTypeQualifier>()) { return true; }
     return false;
 }

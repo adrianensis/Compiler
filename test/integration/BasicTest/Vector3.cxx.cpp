@@ -167,7 +167,7 @@ f32 Vector3::sqrlen()const
 
 f32 Vector3::sqrdst(const Vector3&v)const
 {
-    Vector3&sub=Vector3(v)-(*this);
+    Vector3 sub=Vector3(v)-(*this);
     ;
     return sub.dot(sub);;
 
@@ -284,7 +284,7 @@ f32 Vector3::angle(const Vector3&v,const Vector3&n)const
 {
     f32 dot=this->dot(v);
     ;
-    Vector3&cross=Vector3(*this).cross(v);
+    Vector3 cross=Vector3(*this).cross(v);
     ;
     f32 radians=atan2f(cross.len(),dot);
     ;

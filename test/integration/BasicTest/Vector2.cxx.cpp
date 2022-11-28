@@ -145,7 +145,7 @@ f32 Vector2::sqrlen()const
 
 f32 Vector2::sqrdst(const Vector2&v)const
 {
-    Vector2&sub=Vector2(v).sub(*this);
+    Vector2 sub=Vector2(v).sub(*this);
     ;
     return sub.dot(sub);;
 

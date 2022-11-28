@@ -121,6 +121,7 @@ public:
     // primitives
     DECLARE_TOKEN_PRIMITIVE(Int, "int");
     DECLARE_TOKEN_PRIMITIVE(Float, "float");
+    DECLARE_TOKEN_PRIMITIVE(Double, "double");
     DECLARE_TOKEN_PRIMITIVE(Void, "void");
     DECLARE_TOKEN_PRIMITIVE(Long, "long");
     DECLARE_TOKEN_PRIMITIVE(Short, "short");
@@ -136,7 +137,6 @@ public:
     DECLARE_TOKEN_KEYWORD(Continue, "continue");
     DECLARE_TOKEN_KEYWORD(Default, "default");
     DECLARE_TOKEN_KEYWORD(Do, "do");
-    DECLARE_TOKEN_KEYWORD(Double, "double");
     DECLARE_TOKEN_KEYWORD(Else, "else");
     DECLARE_TOKEN_KEYWORD(Enum, "enum");
     DECLARE_TOKEN_KEYWORD(For, "for");
@@ -144,6 +144,8 @@ public:
     DECLARE_TOKEN_KEYWORD(Signed, "signed");
     DECLARE_TOKEN_KEYWORD(Sizeof, "sizeof");
     DECLARE_TOKEN_KEYWORD(Static, "static");
+    DECLARE_TOKEN_KEYWORD(Virtual, "virtual");
+    DECLARE_TOKEN_KEYWORD(Override, "override");
     DECLARE_TOKEN_KEYWORD(Inline, "inline");
     DECLARE_TOKEN_KEYWORD(Switch, "switch");
     DECLARE_TOKEN_KEYWORD(Unsigned, "unsigned");

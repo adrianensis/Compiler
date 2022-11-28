@@ -4,24 +4,21 @@
 
 void Predefined::predefine()
 {
-    TypeInfo typeInfoFloat;
-    typeInfoFloat.mIdentifier = TokensDefinitions::Float.getValue();
-    typeInfoFloat.mDataType = DataType::TYPE_PRIMITIVE;
-    typeInfoFloat.mIsStack = true;
-    mContext->getRegistry().registerInfo(typeInfoFloat);
-    
-    TypeInfo typeInfoInt;
-    typeInfoInt.mIdentifier = TokensDefinitions::Int.getValue();
-    typeInfoInt.mDataType = DataType::TYPE_PRIMITIVE;
-    typeInfoInt.mIsStack = true;
-    mContext->getRegistry().registerInfo(typeInfoInt);
+    auto predefinePrimitiveType = [&](const std::string& name)
+    {
+        TypeInfo typeInfoPrimitive;
+        typeInfoPrimitive.mIdentifier = name;
+        typeInfoPrimitive.mDataType = DataType::TYPE_PRIMITIVE;
+        typeInfoPrimitive.mIsStack = true;
+        mContext->getRegistry().registerInfo(typeInfoPrimitive);
+    };
 
-    TypeInfo typeInfoBool;
-    typeInfoBool.mIdentifier = TokensDefinitions::Bool.getValue();
-    typeInfoBool.mDataType = DataType::TYPE_PRIMITIVE;
-    typeInfoBool.mIsStack = true;
-    mContext->getRegistry().registerInfo(typeInfoBool);
-    
+    predefinePrimitiveType(TokensDefinitions::Float.getValue());
+    predefinePrimitiveType(TokensDefinitions::Double.getValue());
+    predefinePrimitiveType(TokensDefinitions::Int.getValue());
+    predefinePrimitiveType(TokensDefinitions::Bool.getValue());
+    predefinePrimitiveType(TokensDefinitions::Void.getValue());
+
     VariableInfo variableInfoTrue;
     variableInfoTrue.mIdentifier = TokensDefinitions::True.getValue();
     variableInfoTrue.mType = TokensDefinitions::Bool.getValue();
@@ -32,17 +29,27 @@ void Predefined::predefine()
     variableInfoFalse.mType = TokensDefinitions::Bool.getValue();
     mContext->getRegistry().registerInfo(variableInfoFalse);
     
-    // mContext->pushScope("std");
-    
-    // FunctionInfo functionInfoAcos;
-    // functionInfoAcos.mIdentifier = "acos;float";
-    // functionInfoAcos.mType = "float";
-    // mContext->getRegistry().registerInfo(functionInfoAcos);
-    
-    // FunctionInfo functionInfoSqrt;
-    // functionInfoSqrt.mIdentifier = "sqrt;float";
-    // functionInfoSqrt.mType = "float";
-    // mContext->getRegistry().registerInfo(functionInfoSqrt);
+    mContext->pushScope("std");
 
-    // mContext->popScope();
+    predefinePrimitiveType("int8_t");
+    predefinePrimitiveType("int16_t");
+    predefinePrimitiveType("int32_t");
+    predefinePrimitiveType("int64_t");
+    predefinePrimitiveType("uint8_t");
+    predefinePrimitiveType("uint8_t");
+    predefinePrimitiveType("uint16_t");
+    predefinePrimitiveType("uint32_t");
+    predefinePrimitiveType("uint64_t");
+
+    FunctionInfo functionInfoAcos;
+    functionInfoAcos.mIdentifier = "acos;float";
+    functionInfoAcos.mType = "float";
+    mContext->getRegistry().registerInfo(functionInfoAcos);
+    
+    FunctionInfo functionInfoSqrt;
+    functionInfoSqrt.mIdentifier = "sqrt;float";
+    functionInfoSqrt.mType = "float";
+    mContext->getRegistry().registerInfo(functionInfoSqrt);
+
+    mContext->popScope();
 }

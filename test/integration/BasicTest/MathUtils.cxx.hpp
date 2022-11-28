@@ -19,12 +19,12 @@ class MathUtils{
     inline static const f32 LN10=std::log1p(10.0);
     inline static const f32 PI_180=PI/180.0;
     inline static const f32 INV_PI_180=180.0/PI;
-    inline static f32 rad(f32 deg);
-    inline static f32 deg(f32 rad);
-    inline static bool eqf(f32 a,f32 b,f32 epsilon);
-    inline static bool eqf(f32 a,f32 b);
-    inline static f32 clamp(f32 n,f32 lower,f32 upper);
-    inline static f32 det(f32 a,f32 b,f32 c,f32 d);
+    static f32 rad(f32 deg);
+    static f32 deg(f32 rad);
+    static bool eqf(f32 a,f32 b,f32 epsilon);
+    static bool eqf(f32 a,f32 b);
+    static f32 clamp(f32 n,f32 lower,f32 upper);
+    static f32 det(f32 a,f32 b,f32 c,f32 d);
 
 };
 #endif // MathUtils.cxx

@@ -63,6 +63,7 @@ DECL_NODE(StatementClassDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenStack)
     DECL_TOKEN(mTokenIdentifier)
+    DECL_TOKEN(mTokenParentClassIdentifier)
 END_NODE()
 
 DECL_NODE(StatementClassDefinitionItem)
@@ -124,13 +125,16 @@ END_NODE()
 
 DECL_NODE(StatementFunctionQualifier)
     DECL_CODEGEN()
-    DECL_TOKEN(mTokenQualifier);
+    DECL_TOKEN(mTokenQualifierConst);
+    DECL_TOKEN(mTokenQualifierOverride);
+public:
+    bool mIsPure = false;
 END_NODE()
 
 DECL_NODE(StatementParameterDefinition)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenIdentifier);
-    DECL_CHILD(StatementTypeQualifierVariable, mStatementTypeQualifierVariable);
+    DECL_CHILD(StatementTypeQualifierParameter, mStatementTypeQualifierParameter);
     VariableInfo mParameterInfo;
 END_NODE()
 
@@ -168,6 +172,7 @@ END_NODE()
 
 DECL_EXPRESSION_NODE(StatementExpressionBinary)
     DECL_CODEGEN()
+    DECL_CHILD(StatementUnaryOperator, mStatementUnaryOperatorPre);
     DECL_CHILD(StatementBinaryOperator, mStatementBinaryOperator);
     DECL_CHILD(StatementExpressionPrimary, mStatementExpressionPrimary);
     DECL_CHILD(StatementExpression, mStatementExpression);
@@ -231,22 +236,30 @@ END_NODE()
 DECL_NODE(StatementType)
     DECL_CODEGEN()
     DECL_TOKEN(mTokenType);
+    DECL_CHILD(StatementScope, mStatementScope);
 END_NODE()
 
 DECL_NODE(StatementTypeQualifier)
     DECL_CODEGEN()
-    DECL_TOKEN(mTokenTypeStaticQualifier);
     DECL_TOKEN(mTokenTypeConstQualifier);
     DECL_CHILD(StatementType, mStatementType);
 END_NODE()
 
 DECL_NODE(StatementTypeQualifierVariable)
     DECL_CODEGEN()
+    DECL_TOKEN(mTokenTypeStaticQualifier);
+    DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
+END_NODE()
+
+DECL_NODE(StatementTypeQualifierParameter)
+    DECL_CODEGEN()
     DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
 END_NODE()
 
 DECL_NODE(StatementTypeQualifierFunctionReturn)
     DECL_CODEGEN()
+    DECL_TOKEN(mTokenTypeStaticQualifier);
+    DECL_TOKEN(mTokenTypeVirtualQualifier);
     DECL_CHILD(StatementTypeQualifier, mStatementTypeQualifier);
 END_NODE()
 

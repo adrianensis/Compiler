@@ -204,7 +204,7 @@ f32 Vector4::sqrlen()const
 
 f32 Vector4::sqrdst(const Vector4&v)const
 {
-    Vector4&sub=Vector4(v)-(*this);
+    Vector4 sub=Vector4(v)-(*this);
     ;
     return sub.dot(sub);;
 
