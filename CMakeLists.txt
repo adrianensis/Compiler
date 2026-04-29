@@ -1,14 +1,10 @@
 # ----------------------------------------------------------------------------
-# COMPILER ENGINE
+# COMPILER
 # ----------------------------------------------------------------------------
-
-if(UNIX)
-  cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
-endif(UNIX)
-
-if(WIN32)
-  cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
-endif(WIN32)
+cmake_minimum_required(VERSION 4.2 FATAL_ERROR)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ----------------------------------------------------------------------------
 # FUNCTIONS
@@ -48,20 +44,14 @@ project(${COMPILER})
 # set(CMAKE_CXX_FLAGS_ALL "-std=c++17 -Wall") # this macro was invented by me
 
 if(ENABLE_LOGS)
-  set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -Wall -D DE_ENABLE_LOGS")
+  set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -Wall")
 endif(ENABLE_LOGS)
 
 if(UNIX)
-  set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -std=c++17 -Werror=return-type")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_ALL} -D DE_DEBUG -mavx")
+  set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} -Werror=return-type")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_ALL}")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_ALL} -O3 -mavx")
 endif(UNIX)
-
-if(WIN32)
-  set(CMAKE_CXX_FLAGS_ALL "${CMAKE_CXX_FLAGS_ALL} /m /TP /std:c++17")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_CXX_FLAGS_ALL} -D DE_DEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_CXX_FLAGS_ALL}")
-endif(WIN32)
 
 # ----------------------------------------------------------------------------
 # OUTPUT DIRECTORIES
@@ -77,26 +67,6 @@ message("Release: ${CMAKE_CXX_FLAGS_RELEASE}")
 message("Debug: ${CMAKE_CXX_FLAGS_DEBUG}")
 
 message("Selected Build target: ${CMAKE_BUILD_TYPE}")
-
-# ----------------------------------------------------------------------------
-# DEPENDENCIES
-# ----------------------------------------------------------------------------
-
-# third party libraries
-set(DEPENDENCIES_DIR "dependencies")
-
-# ZLib (libpng dependency)
-if(WIN32)
-  # Requires Zlib -> http://gnuwin32.sourceforge.net/packages/zlib.htm
-  set(ZLIB_ROOT "C:/Program Files (x86)/GnuWin32")
-endif(WIN32)
-
-find_package(ZLIB REQUIRED)
-
-# JSON
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-include_directories("${DEPENDENCIES_DIR}/json-3.9.1/single_include/nlohmann")
-add_subdirectory("${DEPENDENCIES_DIR}/json-3.9.1")
 
 # ----------------------------------------------------------------------------
 # ENGINE PACKAGES
@@ -116,9 +86,6 @@ endforeach()
 
 include_directories("code")
 
-# needed for generated code
-include_directories(".")
-
 # ----------------------------------------------------------------------------
 # LIBRARY OBJECTS
 # ----------------------------------------------------------------------------
@@ -129,6 +96,8 @@ include_directories(".")
 foreach(PACKAGE ${PACKAGES})
   file(GLOB_RECURSE PACKAGE_SOURCE "code/${PACKAGE}/*")
   add_library(${PACKAGE} OBJECT ${PACKAGE_SOURCE})
+  # Tell CMake to use the C++ compiler/linker rules, for header-only packages
+  set_target_properties(${PACKAGE} PROPERTIES LINKER_LANGUAGE CXX)
 endforeach()
 
 # list of objects
@@ -153,7 +122,7 @@ add_library(${COMPILER} ${OBJS})
 # target_link_libraries(${COMPILER} ${OPENGL_gl_LIBRARY})
 # target_link_libraries(${COMPILER} ${OPENGL_glu_LIBRARY})
 # target_link_libraries(${COMPILER} glfw)
-target_link_libraries(${COMPILER} nlohmann_json)
+# target_link_libraries(${COMPILER} nlohmann_json)
 # target_link_libraries(${COMPILER} libpng.so)
 
 # SOIL
