@@ -88,5 +88,7 @@
         "queue": "cpp",
         "stack": "cpp"
     },
-    "C_Cpp.errorSquiggles": "enabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "cmake.configureOnOpen": false,
+    "C_Cpp.errorSquiggles": "enabled",
 }

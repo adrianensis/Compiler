@@ -6,17 +6,16 @@
                 "${workspaceFolder}",
                 "${workspaceFolder}/dependencies/**",
                 "${workspaceFolder}/code",
+                "${workspaceFolder}/test",
                 "${workspaceFolder}/tools",
-                "${workspaceFolder}/tools/**",
-                "${workspaceFolder}/test/**",
-                "${workspaceFolder}/test"
+                "${workspaceFolder}/tools/**"
             ],
             "defines": [],
-            "forcedInclude": ["${workspaceFolder}/code/Core/Module.hpp", "${workspaceFolder}/code/Core/FakeMacros.hpp"],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64"
+            "cppStandard": "c++23",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/compile_commands.json"
         }
     ],
     "version": 4
