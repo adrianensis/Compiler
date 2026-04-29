@@ -2,6 +2,7 @@ import sys
 import os
 import getopt
 import platform
+import shutil
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 cwd = cwd + "/.."
@@ -65,13 +66,15 @@ elif system_name == "Windows":
 #     pass
 
 # -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++
-buildCommand = 'cmake {cmake_generator} -DCMAKE_BUILD_TYPE={buildType} -DBUILD_UNIT_TESTS={buildUnitTests} -DBUILD_INTEGRATION_TESTS={buildIntegrationTests} -DBUILD_TOOLS={buildTools} -DENABLE_LOGS={enableLogs} ..'.format(
-  cmake_generator = cmake_generator,
-  buildType = buildType,
-  buildUnitTests = buildUnitTests,
-  buildIntegrationTests = buildIntegrationTests,
-  buildTools = buildTools,
-  enableLogs = enableLogs
+buildCommand = (
+    f"cmake {cmake_generator} "
+    f"-DCMAKE_C_COMPILER=/usr/bin/clang "
+    f"-DCMAKE_CXX_COMPILER=/usr/bin/clang++ "
+    f"-DCMAKE_BUILD_TYPE={buildType} "
+    f"-DBUILD_UNIT_TESTS={buildUnitTests} "
+    f"-DBUILD_INTEGRATION_TESTS={buildIntegrationTests} "
+    f"-DBUILD_TOOLS={buildTools} "
+    f"-DENABLE_LOGS={enableLogs} .."
 )
 os.system(buildCommand)
 
@@ -91,3 +94,12 @@ elif system_name == "Windows":
 # elif IOS:
 #     # Windows...
 #     pass
+
+os.chdir("..")
+
+##########################################
+########## POST BUILD ###########
+##########################################
+
+compileCommandsJson = "compile_commands.json"
+shutil.copy(os.path.join("build", compileCommandsJson), compileCommandsJson)
