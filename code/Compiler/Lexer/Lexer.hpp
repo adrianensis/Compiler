@@ -1,8 +1,8 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/Lexer/Token.hpp"
+#include <vector>
 
 class Lexer 
 {
@@ -11,7 +11,7 @@ public:
     Lexer(const char* inputStream) : mInputStream{inputStream} {}
 
     Token next();
-    const std::string& getLine(u32 lineNumber) const;
+    const std::string& getLine(unsigned int lineNumber) const;
 
 private:
     Token processIdentifier();
@@ -29,12 +29,12 @@ private:
 
 private:
     const char* mInputStream = nullptr;
-    u32 mLineNumber = 0;
+    unsigned int mLineNumber = 0;
     std::string mCurrentLine = "";
     std::vector<std::string> mLines;
 
 public:
-    GET(LineNumber)
+    unsigned int getLineNumber() const { return mLineNumber; }
 };
 
 #endif

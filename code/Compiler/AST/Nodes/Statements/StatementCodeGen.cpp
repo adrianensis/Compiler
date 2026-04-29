@@ -225,7 +225,7 @@ IMPL_CODEGEN(StatementParameterDefinition)
 
 IMPL_CODEGEN(StatementParametersList)
 {
-    FOR_ARRAY(i, getChildren())
+    for (int i = 0; i < getChildren().size(); ++i)
     {
         getChildren().at(i)->generateCode(builder);
 
@@ -313,9 +313,9 @@ IMPL_CODEGEN(StatementExpressionCompoundInvocation)
         mStatementScope->generateCode(builder);
 
         ScopeBuilder scopeBuilder;
-        FOR_LIST(it, mStatementScope->mScopeVector)
+        for(const auto& it: mStatementScope->mScopeVector)
         {
-            scopeBuilder.pushScope(*it);
+            scopeBuilder.pushScope(it);
         }
 
         typedDataInfo = getContext().getRegistryFromScope(scopeBuilder.getScope()).getInfo<TypedDataInfo>(mStatementExpressionSimpleInvocation->getRootTypeIdentifier());
@@ -364,7 +364,7 @@ IMPL_CODEGEN(StatementExpressionFunctionInvocation)
 
 IMPL_CODEGEN(StatementExpressionFunctionParametersList)
 {
-    FOR_ARRAY(i, getChildren())
+    for (int i = 0; i < getChildren().size(); ++i)
     {
         getChildren().at(i)->generateCode(builder);
 

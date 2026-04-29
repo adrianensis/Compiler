@@ -59,7 +59,7 @@ const Token* Parser::goBack()
     return &mTokens.at(mTokenIndex);
 }
 
-const std::string& Parser::getLine(u32 lineNumber) const
+const std::string& Parser::getLine(unsigned int lineNumber) const
 {
     return mLexer.getLine(lineNumber);
 }

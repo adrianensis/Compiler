@@ -1,8 +1,6 @@
 #ifndef CHARUTILS_HPP
 #define CHARUTILS_HPP
 
-#include "Core/Module.hpp"
-
 class CharUtils 
 {
 public:

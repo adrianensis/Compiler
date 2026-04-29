@@ -1,7 +1,6 @@
 #ifndef CONTEXT_HPP
 #define CONTEXT_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/AST/ScopeBuilder.hpp"
 #include "Compiler/AST/Registry.hpp"
 

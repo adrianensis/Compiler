@@ -3,6 +3,7 @@
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
 #include "Compiler/Utils/CharUtils.hpp"
+#include <algorithm>
 
 void CodeBuilder::addString(const std::string& string)
 {
@@ -23,11 +24,11 @@ void CodeBuilder::addString(const std::string& string)
     mCode += string;
 }
 
-void CodeBuilder::addSpaces(u32 spaces)
+void CodeBuilder::addSpaces(unsigned int spaces)
 {
-    u32 tabSizeInSpaces = 4;
-    u32 totalSpaces = spaces*tabSizeInSpaces;
-    FOR_RANGE(i,0,totalSpaces)
+    unsigned int tabSizeInSpaces = 4;
+    unsigned int totalSpaces = spaces*tabSizeInSpaces;
+    for (int i = 0; i < totalSpaces; ++i)
     {
         mCode += " ";
     }
@@ -119,37 +120,37 @@ const std::string& CodeBuilder::generateCode()
         finalCode += "#ifndef " + ifGuardName + "_HPP\n";
         finalCode += "#define " + ifGuardName + "_HPP\n";
 
-        FOR_LIST(it, mHeaderIncludes)
+        for(const auto& it: mHeaderIncludes)
         {
-            if(!(*it).empty())
+            if(!it.empty())
             {
-                finalCode += "#include \"" + (*it) + ".hpp\"\n";
+                finalCode += "#include \"" + it + ".hpp\"\n";
             }
         }
         
-        FOR_LIST(it, mHeaderForwards)
+        for(const auto& it: mHeaderForwards)
         {
-            if(!(*it).empty())
+            if(!it.empty())
             {
-                finalCode += "class " + (*it) + ";\n";
+                finalCode += "class " + it + ";\n";
             }
         }
     }
     else
     {
-        FOR_LIST(it, mSourceIncludes)
+        for(const auto& it: mSourceIncludes)
         {
-            if(!(*it).empty())
+            if(!it.empty())
             {
-                finalCode += "#include \"" + (*it) + ".hpp\"\n";
+                finalCode += "#include \"" + it + ".hpp\"\n";
             }
         }
 
-        FOR_LIST(it, mSourceForwards)
+        for(const auto& it: mSourceForwards)
         {
-            if(!(*it).empty())
+            if(!it.empty())
             {
-                finalCode += "class " + (*it) + ";\n";
+                finalCode += "class " + it + ";\n";
             }
         }
     }

@@ -1,8 +1,11 @@
 #ifndef REGISTRY_HPP
 #define REGISTRY_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/Lexer/Token.hpp"
+#include "Core/Assert/Assert.hpp"
+#include <map>
+#include <typeinfo>
+#include <iostream>
 
 enum class DataType {
     TYPE_PRIMITIVE,
@@ -66,11 +69,11 @@ public:
         {
             if(getInfo<TypeInfo>(key))
             {
-                ECHO("Duplicated " + info.getKey());
+                std::cout << "Duplicated " + info.getKey() << std::endl;
             }
             else
             {
-                MAP_INSERT(mTypesInfo, key, info);
+                mTypesInfo.emplace(key, info);
                 registered = true;
             }
         }
@@ -78,11 +81,11 @@ public:
         {
             if(getInfo<VariableInfo>(key))
             {
-                ECHO("Duplicated " + info.getKey());
+                std::cout << "Duplicated " + info.getKey() << std::endl;
             }
             else
             {
-                MAP_INSERT(mVariablesInfo, key, info);
+                mVariablesInfo.emplace(key, info);
                 registered = true;
             }
         }
@@ -90,17 +93,17 @@ public:
         {
             if(getInfo<FunctionInfo>(key))
             {
-                ECHO("Duplicated " + info.getKey());
+                std::cout << "Duplicated " + info.getKey() << std::endl;
             }
             else
             {
-                MAP_INSERT(mFunctionsInfo, key, info);
+                mFunctionsInfo.emplace(key, info);
                 registered = true;
             }
         }
         else
         {
-            ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
+            CHECK_MSG(false, std::string(typeid(T).name()) + " is not supported!");
         }
 
         return registered;
@@ -111,7 +114,7 @@ public:
     {
         if constexpr(std::is_same<T, TypeInfo>::value)
         {
-            return MAP_CONTAINS(mTypesInfo, key) ? &mTypesInfo.at(key) : nullptr;
+            return mTypesInfo.contains(key) ? &mTypesInfo.at(key) : nullptr;
         }
         else if constexpr(std::is_same<T, TypedDataInfo>::value)
         {
@@ -128,15 +131,15 @@ public:
         }
         if constexpr(std::is_same<T, VariableInfo>::value)
         {
-            return MAP_CONTAINS(mVariablesInfo, key) ? &mVariablesInfo.at(key) : nullptr;
+            return mVariablesInfo.contains(key) ? &mVariablesInfo.at(key) : nullptr;
         }
         else if constexpr(std::is_same<T, FunctionInfo>::value)
         {
-            return MAP_CONTAINS(mFunctionsInfo, key) ? &mFunctionsInfo.at(key) : nullptr;
+            return mFunctionsInfo.contains(key) ? &mFunctionsInfo.at(key) : nullptr;
         }
         else
         {
-            ASSERT_MSG(false, std::string(typeid(T).name()) + " is not supported!");
+            CHECK_MSG(false, std::string(typeid(T).name()) + " is not supported!");
         }
 
         return nullptr;

@@ -1,7 +1,6 @@
 #ifndef AST_HPP
 #define AST_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/Parser/Parser.hpp"
 #include "Compiler/AST/Context.hpp"
 

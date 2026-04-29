@@ -391,9 +391,9 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
                 mFunctionSignature.push(mTokenIdentifier.getLexeme() + mTokenOperatorOverload.getLexeme());
             }
 
-            FOR_LIST(it, mStatementParametersList->getChildren())
+            for(auto it: mStatementParametersList->getChildren())
             {
-                const StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(*it);
+                const StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(it);
                 mFunctionSignature.push(paramDefNode->mStatementTypeQualifierParameter->mStatementTypeQualifier->mStatementType->mTokenType.getLexeme());
             }
 
@@ -401,9 +401,9 @@ IMPL_PARSE(StatementFunctionBaseDefinition)
             getContext().pushScope(mFunctionSignature.getSignature());
 
             // Register parameter infos
-            FOR_LIST(it, mStatementParametersList->getChildren())
+            for(auto it: mStatementParametersList->getChildren())
             {
-                StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(*it);
+                StatementParameterDefinition* paramDefNode = dynamic_cast<StatementParameterDefinition*>(it);
                 getContext().getRegistry().registerInfo(paramDefNode->mParameterInfo);
             }
 
@@ -686,9 +686,9 @@ IMPL_PARSE(StatementExpressionFunctionInvocation)
             // Generate function signature
             FunctionSignatureBuilder functionSignature;
             functionSignature.push(mTokenIdentifier.getLexeme());
-            FOR_LIST(it, mStatementExpressionFunctionParametersList->getChildren())
+            for(auto it: mStatementExpressionFunctionParametersList->getChildren())
             {
-                const StatementExpression* paramExpression = dynamic_cast<StatementExpression*>(*it);
+                const StatementExpression* paramExpression = dynamic_cast<StatementExpression*>(it);
                 const std::string typeIdentifier = getContext().findTypedDataTypeInfoIdentifier(paramExpression->getRootTypeIdentifier());
                 functionSignature.push(typeIdentifier);
             }

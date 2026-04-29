@@ -179,9 +179,9 @@ Token Lexer::processComment()
 
 Token Lexer::processSimpleToken(const TokenType& tokenType)
 {
-    u32 tokenCharsSize = tokenType.getValue().size();
+    unsigned int tokenCharsSize = tokenType.getValue().size();
     Token simple(tokenType, mInputStream, tokenCharsSize, mLineNumber);
-    FOR_RANGE(i, 0, tokenCharsSize)
+    for (int i = 0; i < tokenCharsSize; ++i)
     {
         advance();
     }
@@ -230,7 +230,7 @@ char Lexer::advance()
     return *mInputStream++;
 }
 
-const std::string& Lexer::getLine(u32 lineNumber) const
+const std::string& Lexer::getLine(unsigned int lineNumber) const
 {
     return mLines.at(lineNumber);
 }

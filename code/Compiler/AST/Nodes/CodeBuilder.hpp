@@ -1,7 +1,8 @@
 #ifndef CODEBUILDER_HPP
 #define CODEBUILDER_HPP
 
-#include "Core/Module.hpp"
+#include <string>
+#include <vector>
 
 class Node;
 class Token;
@@ -33,12 +34,12 @@ public:
     const std::string& generateCode();
 
 private:
-    void addSpaces(u32 spaces);
+    void addSpaces(unsigned int spaces);
 
 private:
     std::string mCode;
     std::string mFileName;
-    u32 mIndent = 0;
+    unsigned int mIndent = 0;
     bool mIsNewLine = true;
     std::vector<std::string> mHeaderIncludes;
     std::vector<std::string> mSourceIncludes;
@@ -46,7 +47,7 @@ private:
     std::vector<std::string> mSourceForwards;
 
 public:
-    SET(FileName)
+    void setFileName(const std::string& fileName) { mFileName = fileName; }
 };
 
 #endif

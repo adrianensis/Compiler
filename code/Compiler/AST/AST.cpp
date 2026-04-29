@@ -2,11 +2,22 @@
 #include "Compiler/AST/Nodes/Statements/Statement.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
 #include "Compiler/Predefined/Predefined.hpp"
+#include <sstream>
+#include <fstream>
+#include <filesystem>
 
 AST::~AST() 
 {
-    MAP_DELETE_CONTENT(mModules);
-    DELETE_CONTENT(mParsers);
+    for(auto& it: mModules)
+    {
+        delete it.second;
+    }
+    mModules.clear();
+    for(auto it: mParsers)
+    {
+        delete it;
+    }
+    mParsers.clear();
 }
 
 void AST::addFile(const std::string& path)
@@ -20,10 +31,10 @@ void AST::generateCode()
     Predefined predefined(&mContext);
     predefined.predefine();
 
-    FOR_LIST(it, mFiles)
+    for(const auto& it: mFiles)
     {
         std::ifstream file;
-        file.open(*it);
+        file.open(it);
 
         if(file.good() && !file.fail())
         {
@@ -31,26 +42,26 @@ void AST::generateCode()
             ss << file.rdbuf(); // reading data
             std::string fileContent = ss.str();
             
-            initModule(*it, fileContent);
+            initModule(it, fileContent);
         }
 
         file.close();
     }
     
-    FOR_MAP(it, mModules)
+    for(auto& it: mModules)
     {   
-        parseModule(it->second);
+        parseModule(it.second);
     }
 
-    FOR_MAP(it, mModules)
+    for(auto& it: mModules)
     {
-        generateCode(it->second);
+        generateCode(it.second);
     }
 }
 
 void AST::initModule(const std::string& path, const std::string& content)
 {
-    ECHO("INIT " + path);
+    std::cout << "INIT " + path << std::endl;
 
     Parser* parser = new Parser(content);
     mParsers.push_back(parser);
@@ -64,7 +75,7 @@ void AST::initModule(const std::string& path, const std::string& content)
     module->parseHeader();
 
     std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-    MAP_INSERT(mModules, moduleName, module);
+    mModules.emplace(moduleName, module);
 }
 
 void AST::parseModule(StatementModule* module)
@@ -72,14 +83,14 @@ void AST::parseModule(StatementModule* module)
     if(!module->mParsed && !module->mIsParsing)
     {
         std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-        ECHO("PARSING " + moduleName);
+        std::cout << "PARSING " + moduleName << std::endl;
         module->mIsParsing = true;
 
-        FOR_LIST(it, module->mDependencies)
+        for(const auto& it: module->mDependencies)
         {
-            StatementModule* dependency = mModules[*it];
+            StatementModule* dependency = mModules[it];
             std::string dependencyName = dependency->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-            ECHO("DEPENDENCY DETECTED " + dependencyName);
+            std::cout << "DEPENDENCY DETECTED " + dependencyName << std::endl;
             parseModule(dependency);
         }
 
@@ -90,13 +101,13 @@ void AST::parseModule(StatementModule* module)
 
         module->parse();
 
-        ECHO("PARSED " + moduleName);
+        std::cout << "PARSED " + moduleName << std::endl;
     }
 }
 
 void AST::generateCode(StatementModule* module)
 {
-    ECHO("CODE BUILDING " + module->mPath);
+    std::cout << "CODE BUILDING " + module->mPath << std::endl;
 
     CodeBuilder builderHeader;
     builderHeader.setFileName(std::filesystem::path( module->mPath ).filename());

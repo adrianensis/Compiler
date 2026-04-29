@@ -20,12 +20,12 @@ TokenType::TokenType(const std::string& name, const std::string& value, bool isK
 
 bool TokenType::isKeyword(const std::string& keyword) 
 {
-    return MAP_CONTAINS(smKeywordsMap, keyword);
+    return smKeywordsMap.contains(keyword);
 }
 
 bool TokenType::isPrimitive(const std::string& primitive) 
 {
-    return MAP_CONTAINS(smPrimitivesMap, primitive);
+    return smPrimitivesMap.contains(primitive);
 }
 
 const TokenType& TokenType::getKeywordTokenType(const std::string& keyword)

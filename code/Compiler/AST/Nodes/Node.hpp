@@ -1,9 +1,9 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/Lexer/Token.hpp"
 #include "Compiler/AST/Registry.hpp"
+#include <vector>
 
 #define DECL_NODE(nodeName) class nodeName: public Node { DECL_PARSE();
 #define DECL_EXPRESSION_NODE(nodeName) class nodeName: public NodeExpression { DECL_PARSE();
@@ -138,10 +138,10 @@ private:
     Context* mContext = nullptr;
 private:
     std::vector<Node*> mChildren;
-    u32 mTokensParsed = 0;
+    unsigned int mTokensParsed = 0;
 public:
-    CRGET(Children)
-    CGET(Parser)
+    const std::vector<Node*>& getChildren() const { return mChildren; }
+    Parser* getParser() const { return mParser; }
 };
 
 class NodeExpression : public Node 

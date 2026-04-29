@@ -32,7 +32,7 @@ void Context::pushScope(const std::string& string)
 {
     mScopeBuilder.pushScope(string);
     
-    if(! MAP_CONTAINS(mRegistryMap, mScopeBuilder.getScope()))
+    if(! mRegistryMap.contains(mScopeBuilder.getScope()))
     {
         createRegistry(mScopeBuilder.getScope());
     }
@@ -60,7 +60,7 @@ bool Context::hasScope() const
 
 void Context::createRegistry(const std::string& string)
 {
-    MAP_INSERT(mRegistryMap, string, Registry());
+    mRegistryMap.emplace(string, Registry());
 }
 
 const std::string& Context::getScope() const
@@ -93,14 +93,14 @@ std::string Context::findTypedDataTypeInfoIdentifier(const std::string& identifi
 {
     try
     {
-        f32 floatValue = std::stof(identifier);
+        float floatValue = std::stof(identifier);
         return TokensDefinitions::Float.getValue();
     }
     catch(std::exception& e)
     {
         try
         {
-            i32 integerValue = std::stoi(identifier);
+            int integerValue = std::stoi(identifier);
             return TokensDefinitions::Int.getValue();
         }
         catch(std::exception& e)
@@ -188,7 +188,7 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
     {
         if(!scopeBuilder.hasScope())
         {
-            ECHO("Undefined Type: " + typeIdentifier);
+            std::cout << "Undefined Type: " + typeIdentifier << std::endl;
             return nullptr;
         }
 
@@ -217,6 +217,6 @@ const TypeInfo* Context::findTypeInfo(const std::string& typeIdentifier)
         return getRegistryFromScope(currentScope).getInfo<TypeInfo>(typeIdentifier);
     }
     
-    ECHO("Undefined Type: " + typeIdentifier);
+    std::cout << "Undefined Type: " + typeIdentifier << std::endl;
     return nullptr;
 }

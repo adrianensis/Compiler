@@ -1,7 +1,6 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/Lexer/Lexer.hpp"
 #include "Compiler/AST/ScopeBuilder.hpp"
 
@@ -24,7 +23,7 @@ public:
     const Token* advance();
     const Token* goBack();
 
-    const std::string& getLine(u32 lineNumber) const;
+    const std::string& getLine(unsigned int lineNumber) const;
 
 public:
     public: std::string mPath;
@@ -33,7 +32,7 @@ private:
     Lexer mLexer;
     std::string mInputString;
     std::vector<Token> mTokens;
-    u32 mTokenIndex = 0;
+    unsigned int mTokenIndex = 0;
 };
 
 #endif

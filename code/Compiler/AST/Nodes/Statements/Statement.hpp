@@ -1,7 +1,6 @@
 #ifndef STATEMENT_HPP
 #define STATEMENT_HPP
 
-#include "Core/Module.hpp"
 #include "Compiler/AST/Nodes/Node.hpp"
 #include "Compiler/Lexer/Token.hpp"
 #include "Compiler/AST/FunctionSignatureBuilder.hpp"

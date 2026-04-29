@@ -1,7 +1,8 @@
 #ifndef SCOPEBUILDER_HPP
 #define SCOPEBUILDER_HPP
 
-#include "Core/Module.hpp"
+#include <vector>
+#include <string>
 
 class ScopeBuilder
 {
@@ -20,8 +21,8 @@ public:
     std::vector<std::string> mScopeVector;
 
 public:
-    CRGET(Scope)
-    CRGET(ScopeVector)
+    const std::string& getScope() const { return mScope; }
+    const std::vector<std::string>& getScopeVector() const { return mScopeVector; }
 };
 
 #endif

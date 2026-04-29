@@ -6,7 +6,11 @@
 
 Node::~Node() 
 {
-    DELETE_CONTENT(mChildren);
+    for(auto it: mChildren)
+    {
+        delete it;
+    }
+    mChildren.clear();
 }
 
 void Node::init(Parser* parser, Context* context) 
@@ -27,7 +31,7 @@ void Node::generateCode(CodeBuilder& builder) const
 
 void Node::generateCodeChildren(CodeBuilder& builder) const
 {
-    FOR_ARRAY(i, mChildren)
+    for (int i = 0; i < mChildren.size(); ++i)
     {
         mChildren[i]->generateCode(builder);
     }
@@ -96,12 +100,12 @@ bool Node::checkToken(const TokenType& type)
 
 void Node::revert()
 {
-    FOR_LIST(child, mChildren)
+    for(auto child: mChildren)
     {
-        (*child)->revert();
+        child->revert();
     }
 
-    FOR_RANGE(i, 0, mTokensParsed)
+    for(int i = 0; i < mTokensParsed; ++i)
     {
         mParser->goBack();
     }
@@ -113,13 +117,13 @@ void Node::logError(const std::string& error) const
 {
     const Token* token = mParser->getCurrentToken();
     const Token* nextToken = mParser->getNextToken();
-    BRLINE()
-    ECHO("ERROR: " + std::string(typeid(*this).name()));
-    ECHO("ERROR: line " + std::to_string((token->getLineNumber() + 1)) + ": " + mParser->getLine(token->getLineNumber()));
-    ECHO("ERROR: at token " + token->getLexeme());
+    std::cout << std::endl;
+    std::cout << "ERROR: " + std::string(typeid(*this).name()) << std::endl;
+    std::cout << "ERROR: line " + std::to_string((token->getLineNumber() + 1)) + ": " + mParser->getLine(token->getLineNumber()) << std::endl;
+    std::cout << "ERROR: at token " + token->getLexeme() << std::endl;
     if(nextToken)
     {
-        ECHO("ERROR: next token " + nextToken->getLexeme());
+        std::cout << "ERROR: next token " + nextToken->getLexeme() << std::endl;
     }
-    ECHO("ERROR: " + error);
+    std::cout << "ERROR: " + error << std::endl;
 }

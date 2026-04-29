@@ -1,7 +1,8 @@
 #ifndef FUNCTIONSIGNATUREBUILDER_HPP
 #define FUNCTIONSIGNATUREBUILDER_HPP
 
-#include "Core/Module.hpp"
+#include <string>
+#include <vector>
 
 class FunctionSignatureBuilder
 {
@@ -18,8 +19,8 @@ public:
     std::vector<std::string> mSignatureVector;
 
 public:
-    CRGET(Signature)
-    CRGET(SignatureVector)
+    const std::string& getSignature() const { return mSignature; };
+    const std::vector<std::string>& getSignatureVector() const { return mSignatureVector; };
 };
 
 #endif

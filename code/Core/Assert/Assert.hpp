@@ -1,17 +1,24 @@
-#ifndef ASSERT_HPP
-#define ASSERT_HPP
+#pragma once
 
-#include "Core/BasicTypes.hpp"
+#include "Core/Signal/Signal.hpp"
+#include <cstdio>
+#include <string>
 
 class AssertUtils
 {
-private:
-	inline static const std::string smEmptyAssert = "?";
-
 public:
-    static void assertMsg(bool condition, const std::string& file, u32 line, const std::string& function, const std::string& message = smEmptyAssert);
+	template <typename... T>
+    static void checkMsg(bool condition, const std::string& conditionString, const std::string& file, unsigned int line, const std::string& function, const std::string& fmt, T&&... args)
+    {
+        if (!condition)
+        {
+            std::string composedFmt = "[" + file + ":" + function + ":" + std::to_string(line) + "]";
+            composedFmt += "[" + conditionString + "] ";
+            composedFmt += fmt;
+            std::printf(composedFmt.c_str(), args...);
+            SignalUtils::breakpointTrap();
+        }
+    }
 };
 
-#define ASSERT_MSG(condition, message) AssertUtils::assertMsg((condition), __FILE__, __LINE__, __FUNCTION__, std::string("[ " #condition " ] ") + message);
-
-#endif
+#define CHECK_MSG(condition, ...) AssertUtils::checkMsg((condition), #condition, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__);

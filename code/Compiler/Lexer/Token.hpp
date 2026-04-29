@@ -1,7 +1,8 @@
 #ifndef TOKEN_HPP
 #define TOKEN_HPP
 
-#include "Core/Module.hpp"
+#include <string>
+#include <map>
 
 class TokenType
 {
@@ -52,10 +53,10 @@ public:
     static bool isPrimitive(const std::string& primitive);
 
 private:
-    inline static u32 smTokenTypeCounter = 0;
+    inline static unsigned int smTokenTypeCounter = 0;
     inline static std::map<std::string, TokenType> smKeywordsMap = {};
     inline static std::map<std::string, TokenType> smPrimitivesMap = {};
-    u32 mId = 0;
+    unsigned int mId = 0;
     std::string mName{};
     std::string mValue{};
 };
@@ -172,10 +173,10 @@ class Token
 public:
     Token() = default;
 
-    Token(const TokenType& type, const char* inputStream, std::size_t len, u32 lineNumber)
+    Token(const TokenType& type, const char* inputStream, std::size_t len, unsigned int lineNumber)
     : mTokenType{type}, mLexeme(inputStream, len), mLineNumber(lineNumber) { mIsNull=false; }
 
-    Token(const TokenType& type, const char* inputStream, const char* end, u32 lineNumber)
+    Token(const TokenType& type, const char* inputStream, const char* end, unsigned int lineNumber)
     : mTokenType{type}, mLexeme(inputStream, std::distance(inputStream, end)), mLineNumber(lineNumber) { mIsNull=false; }
 
     bool is(const TokenType& type) const { return mTokenType == type; }
@@ -196,13 +197,13 @@ public:
 private:
     TokenType mTokenType{};
     std::string_view mLexeme{};
-    u32 mLineNumber = 0;
+    unsigned int mLineNumber = 0;
 
     bool mIsNull = true;
 
 public:
-    GET(LineNumber)
-    GET(IsNull)
+    unsigned int getLineNumber() const { return mLineNumber; }
+    bool getIsNull() const { return mIsNull; }
 };
 
 #endif
