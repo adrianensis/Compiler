@@ -106,9 +106,9 @@ public:
 
     Vector3 div(const Vector3 rhs)
     {
-        // ASSERT_MSG(rhs.x != 0, "Division by zero.");
-        // ASSERT_MSG(rhs.y != 0, "Division by zero.");
-        // ASSERT_MSG(rhs.z != 0, "Division by zero.");
+        // CHECK_MSG(rhs.x != 0, "Division by zero.");
+        // CHECK_MSG(rhs.y != 0, "Division by zero.");
+        // CHECK_MSG(rhs.z != 0, "Division by zero.");
         x = x / rhs.x;
         y = y / rhs.y;
         z = z / rhs.z;
@@ -141,7 +141,7 @@ public:
 
     Vector3 div(f32 rhs)
     {
-        // ASSERT_MSG(rhs != 0, "Division by zero.");
+        // CHECK_MSG(rhs != 0, "Division by zero.");
         x = x / rhs;
         y = y / rhs;
         z = z / rhs;

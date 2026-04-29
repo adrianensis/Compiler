@@ -88,8 +88,8 @@ public:
 
     Vector2 div(const Vector2 rhs)
     {
-        // ASSERT_MSG(rhs.x != 0, "Division by zero.");
-        // ASSERT_MSG(rhs.y != 0, "Division by zero.");
+        // CHECK_MSG(rhs.x != 0, "Division by zero.");
+        // CHECK_MSG(rhs.y != 0, "Division by zero.");
         x = x / rhs.x;
         y = y / rhs.y;
         return this;
@@ -118,7 +118,7 @@ public:
 
     Vector2 div(f32 rhs)
     {
-        //ASSERT_MSG(rhs != 0, "Division by zero.");
+        //CHECK_MSG(rhs != 0, "Division by zero.");
         x = x / rhs;
         y = y / rhs;
         return this;
@@ -159,7 +159,7 @@ public:
     {
         f32 len = this.len();
 
-        //ASSERT_MSG(len > 0, "Length is zero.");
+        //CHECK_MSG(len > 0, "Length is zero.");
         this.div(len);
 
         return this;

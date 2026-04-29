@@ -53,7 +53,6 @@ public:
     //     DO_COPY(mVerticesCount)
     // }
 
-    // GET(VerticesCount)
 };
 
 stack class Line: public Shape
