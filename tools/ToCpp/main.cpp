@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
         Compiler compiler;
         compiler.init();
 
-        FOR_RANGE(i, 1, argc)
+        for(int i = 1; i < argc; ++i)
         {
             compiler.addFile(argv[i]);
         }
