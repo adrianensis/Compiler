@@ -4,3 +4,5 @@ compiledLibs/
 binaries/
 dependencies/
 log.txt
+.cache
+compile_commands.json
