@@ -9,7 +9,14 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/binaries/tool_ToCpp",
-            "args": ["${workspaceFolder}/test/integration/BasicTest/*.cxx"],
+            "args": [
+                "${workspaceFolder}/test/integration/BasicTest/BasicTypes.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/MathUtils.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Geometry.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector2.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector3.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector4.cxx",
+            ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "compiler build debug"
         },
@@ -18,7 +25,14 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/binaries/tool_ToCpp",
-            "args": ["${workspaceFolder}/test/integration/BasicTest/*.cxx"],
+            "args": [
+                "${workspaceFolder}/test/integration/BasicTest/BasicTypes.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/MathUtils.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Geometry.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector2.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector3.cxx",
+                "${workspaceFolder}/test/integration/BasicTest/Vector4.cxx",
+            ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "compiler build release"
         }
