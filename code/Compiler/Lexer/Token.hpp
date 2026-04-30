@@ -28,12 +28,12 @@ public:
         return *this;
     }
 
-    std::string getName() const 
+    const std::string& getName() const 
     {
         return mName;
     }
 
-    std::string getValue() const 
+    const std::string& getValue() const 
     {
         return mValue;
     }
@@ -182,9 +182,9 @@ public:
     bool is(const TokenType& type) const { return mTokenType == type; }
     bool isOneOf(const TokenType& tokenType1, const TokenType& tokenType2) const { return is(tokenType1) || is(tokenType2); }
 
-    std::string getLexeme() const 
+    const std::string& getLexeme() const 
     {
-        return std::string(mLexeme);
+        return mLexeme;
     }
     std::string toString() const 
     {
@@ -196,7 +196,7 @@ public:
 
 private:
     TokenType mTokenType{};
-    std::string_view mLexeme{};
+    std::string mLexeme{};
     unsigned int mLineNumber = 0;
 
     bool mIsNull = true;

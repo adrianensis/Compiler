@@ -19,7 +19,7 @@ public:
     std::string mIdentifier = "";
     std::string mPath = "";
 
-    virtual std::string getKey() const { return mIdentifier; }
+    virtual const std::string& getKey() const { return mIdentifier; }
 };
 
 class TypeInfo : public BaseInfo
