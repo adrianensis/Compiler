@@ -38,7 +38,7 @@ private:
     ScopeBuilder mClassScopeBuilder;
     
     // <Scope, Registry>
-    std::map<std::string, Registry> mRegistryMap; 
+    std::unordered_map<std::string, Registry> mRegistryMap; 
 };
 
 #endif

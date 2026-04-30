@@ -3,7 +3,7 @@
 
 #include "Compiler/Lexer/Token.hpp"
 #include "Core/Assert/Assert.hpp"
-#include <map>
+#include <unordered_map>
 #include <typeinfo>
 #include <iostream>
 
@@ -51,9 +51,9 @@ public:
 class Registry
 {
 private:
-    std::map<std::string, TypeInfo> mTypesInfo;
-    std::map<std::string, VariableInfo> mVariablesInfo;
-    std::map<std::string, FunctionInfo> mFunctionsInfo;
+    std::unordered_map<std::string, TypeInfo> mTypesInfo;
+    std::unordered_map<std::string, VariableInfo> mVariablesInfo;
+    std::unordered_map<std::string, FunctionInfo> mFunctionsInfo;
 
 public:
     Registry() = default;

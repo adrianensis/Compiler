@@ -21,7 +21,7 @@ private:
 
 private:
     std::vector<std::string> mFiles;
-    std::map<std::string, StatementModule*> mModules;
+    std::unordered_map<std::string, StatementModule*> mModules;
     std::vector<Parser*> mParsers;
     Context mContext;
 };

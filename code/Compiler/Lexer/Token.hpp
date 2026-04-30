@@ -2,7 +2,7 @@
 #define TOKEN_HPP
 
 #include <string>
-#include <map>
+#include <unordered_map>
 
 class TokenType
 {
@@ -54,8 +54,8 @@ public:
 
 private:
     inline static unsigned int smTokenTypeCounter = 0;
-    inline static std::map<std::string, TokenType> smKeywordsMap = {};
-    inline static std::map<std::string, TokenType> smPrimitivesMap = {};
+    inline static std::unordered_map<std::string, TokenType> smKeywordsMap = {};
+    inline static std::unordered_map<std::string, TokenType> smPrimitivesMap = {};
     unsigned int mId = 0;
     std::string mName{};
     std::string mValue{};
