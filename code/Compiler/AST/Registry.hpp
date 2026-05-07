@@ -2,7 +2,8 @@
 #define REGISTRY_HPP
 
 #include "Compiler/Lexer/Token.hpp"
-#include "Core/Assert/Assert.hpp"
+#include "Compiler/Core/Assert/Assert.hpp"
+#include "Compiler/Core/Log/Log.hpp"
 #include <unordered_map>
 #include <typeinfo>
 #include <iostream>
@@ -69,7 +70,7 @@ public:
         {
             if(getInfo<TypeInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                LOG("Duplicated " + info.getKey());
             }
             else
             {
@@ -81,7 +82,7 @@ public:
         {
             if(getInfo<VariableInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                LOG("Duplicated " + info.getKey());
             }
             else
             {
@@ -93,7 +94,7 @@ public:
         {
             if(getInfo<FunctionInfo>(key))
             {
-                std::cout << "Duplicated " + info.getKey() << std::endl;
+                LOG("Duplicated " + info.getKey());
             }
             else
             {

@@ -2,6 +2,7 @@
 #include "Compiler/AST/Nodes/Statements/Statement.hpp"
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
 #include "Compiler/Predefined/Predefined.hpp"
+#include "Compiler/Core/Log/Log.hpp"
 #include <sstream>
 #include <fstream>
 #include <filesystem>
@@ -61,7 +62,7 @@ void AST::generateCode()
 
 void AST::initModule(const std::string& path, const std::string& content)
 {
-    std::cout << "INIT " + path << std::endl;
+    LOG("INIT " + path );
 
     Parser* parser = new Parser(content);
     mParsers.push_back(parser);
@@ -83,14 +84,14 @@ void AST::parseModule(StatementModule* module)
     if(!module->mParsed && !module->mIsParsing)
     {
         std::string moduleName = module->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-        std::cout << "PARSING " + moduleName << std::endl;
+        LOG("PARSING " + moduleName)
         module->mIsParsing = true;
 
         for(const auto& it: module->mDependencies)
         {
             StatementModule* dependency = mModules[it];
             std::string dependencyName = dependency->mStatementDeclareModule->mTokenIdentifier.getLexeme();
-            std::cout << "DEPENDENCY DETECTED " + dependencyName << std::endl;
+            LOG("DEPENDENCY DETECTED " + dependencyName)
             parseModule(dependency);
         }
 
@@ -101,13 +102,13 @@ void AST::parseModule(StatementModule* module)
 
         module->parse();
 
-        std::cout << "PARSED " + moduleName << std::endl;
+        LOG("PARSED " + moduleName)
     }
 }
 
 void AST::generateCode(StatementModule* module)
 {
-    std::cout << "CODE BUILDING " + module->mPath << std::endl;
+    LOG("CODE BUILDING " + module->mPath)
 
     CodeBuilder builderHeader;
     builderHeader.setFileName(std::filesystem::path( module->mPath ).filename());

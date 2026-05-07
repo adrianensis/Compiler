@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Signal/Signal.hpp"
+#include "Compiler/Core/Signal/Signal.hpp"
 #include <cstdio>
 #include <string>
 

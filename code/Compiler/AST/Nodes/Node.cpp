@@ -3,6 +3,7 @@
 #include "Compiler/AST/Nodes/CodeBuilder.hpp"
 #include "Compiler/AST/ScopeBuilder.hpp"
 #include "Compiler/AST/Context.hpp"
+#include "Compiler/Core/Log/Log.hpp"
 
 Node::~Node() 
 {
@@ -117,13 +118,13 @@ void Node::logError(const std::string& error) const
 {
     const Token* token = mParser->getCurrentToken();
     const Token* nextToken = mParser->getNextToken();
-    std::cout << std::endl;
-    std::cout << "ERROR: " + std::string(typeid(*this).name()) << std::endl;
-    std::cout << "ERROR: line " + std::to_string((token->getLineNumber() + 1)) + ": " + mParser->getLine(token->getLineNumber()) << std::endl;
-    std::cout << "ERROR: at token " + token->getLexeme() << std::endl;
+    LOG_BRLINE()
+    LOG("ERROR: " + std::string(typeid(*this).name()))
+    LOG("ERROR: line " + std::to_string((token->getLineNumber() + 1)) + ": " + mParser->getLine(token->getLineNumber()))
+    LOG("ERROR: at token " + token->getLexeme())
     if(nextToken)
     {
-        std::cout << "ERROR: next token " + nextToken->getLexeme() << std::endl;
+        LOG("ERROR: next token " + nextToken->getLexeme())
     }
-    std::cout << "ERROR: " + error << std::endl;
+    LOG("ERROR: " + error)
 }
